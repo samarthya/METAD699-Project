@@ -61,7 +61,7 @@ METAD699-Project/
 
 ## Data Organization
 
-The downloaded CSV's are available in the local `data/` folder
+The downloaded CSVs are available in the local `data/` folder
 
 ## Running the Analysis
 
