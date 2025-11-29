@@ -35,7 +35,12 @@ This is a comprehensive data mining project analyzing Airbnb rental data from Zu
 3. **Activate the virtual environment**
 
    ```bash
-   source .venv/bin/activate  # On Linux/Mac
+   # On Linux/Mac
+   source .venv/bin/activate
+   # On Windows CMD
+   .venv\Scripts\activate
+   # On Windows PowerShell
+   .venv\Scripts\Activate.ps1
    ```
 
 4. **Launch Jupyter Notebook**
@@ -61,7 +66,7 @@ METAD699-Project/
 
 ## Data Organization
 
-The downloaded CSV's are available in the local `data/` folder
+The downloaded CSVs are available in the local `data/` folder
 
 ## Running the Analysis
 
