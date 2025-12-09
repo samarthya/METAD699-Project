@@ -144,6 +144,7 @@ neighborhood_...  52.18     11.342      4.599      0.000       30.125      74.23
 ```
 
 **Interpretation of Top Coefficients**:
+
 - **accommodates (+18.45 CHF)**: Each additional guest capacity adds ~CHF 18.50/night
 - **beds (+12.67 CHF)**: Each bed adds ~CHF 12.70 (redundant with accommodates but statistically significant)
 - **premium neighborhood (+52 CHF)**: Alt-Stadt premium ~CHF 52/night vs. baseline
@@ -186,12 +187,14 @@ Actual vs. Predicted scatter shows:
 **Objective**: Predict whether a listing has **"WiFi"** (binary) using numerical features.
 
 **Approach**:
+
 1. Selected 6 numerical predictors: accommodates, bedrooms, beds, number_of_reviews, review_scores_rating, availability_365
 2. Scaled features using StandardScaler
 3. Tested k ∈ {3, 5, 7, 9, 11, 15}
 4. Evaluated against naive baseline: always predict majority class (85% have WiFi)
 
 **Results**:
+
 - **Optimal k=7**: Test accuracy 87.2% (vs. baseline 85%)
 - **Modest improvement**: +2.2% over naive benchmark
 - **Confusion Matrix**: High true negatives (correctly identified non-WiFi listings); some false negatives
@@ -205,17 +208,20 @@ Actual vs. Predicted scatter shows:
 **Objective**: Predict `host_response_time` (5 classes: "within an hour", "within a few hours", "within a day", "a few days or more", "unknown").
 
 **Process**:
+
 1. **Data preparation**: Created binary/dummy predictors from listing and review features
 2. **Train/test split**: 80/20
 3. **Grid search**: Varied max_depth (3–15) and min_samples_leaf (5–50) via 5-fold cross-validation
 4. **Best model**: max_depth=8, min_samples_leaf=10
 
 **Results**:
+
 - **Test accuracy**: 53.2%
 - **Baseline (majority class "within an hour")**: 48.1%
 - **Improvement**: +5.1 percentage points
 
 **Confusion Matrix Insights**:
+
 - Model heavily biased toward predicting "within an hour" (majority class)
 - Struggle distinguishing slower categories due to class imbalance
 - Recall on minority classes (>1 day) < 20%
@@ -231,6 +237,7 @@ Actual vs. Predicted scatter shows:
 **Objective**: Predict `price_quartile` (Q1: CHF 45–125, Q2: CHF 125–160, Q3: CHF 160–210, Q4: CHF 210+) using text: description, host_about, amenities.
 
 **Approach**:
+
 1. Created price quartile labels
 2. Used a **DistilBERT transformer** (pre-trained on English, fine-tuned on text corpus)
 3. Tokenized text inputs; embedded to 768-dim vectors
@@ -238,11 +245,13 @@ Actual vs. Predicted scatter shows:
 5. Train/test split: 80/20
 
 **Results**:
+
 - **Training accuracy**: 68.3%
 - **Test accuracy**: 64.7%
 - **Per-class F1**: Q1=0.62, Q2=0.59, Q3=0.65, Q4=0.71 (luxury tier easiest to identify)
 
 **Fictional Example**:
+
 ```
 Description: "Bright, modern studio in heart of city. 
              Hardwood floors, full kitchen, designer furniture."
@@ -300,6 +309,7 @@ We constructed a **market segmentation model** using 10 engineered features:
 ### Cluster Interpretations
 
 **Cluster 0: Budget Shared/Private Rooms**
+
 - Lowest pricing (CHF 128 median)
 - Smallest capacity (2.2 guests) → primarily private rooms, some shared
 - Highest review count (42) → popular, well-established listings
@@ -307,6 +317,7 @@ We constructed a **market segmentation model** using 10 engineered features:
 - Strategy: high volume, frequent turnover
 
 **Cluster 1: Mid-Range Standard Apartments**
+
 - Middle pricing (CHF 168)
 - Moderate capacity (3.1 guests) → standard 1-2 bedroom flats
 - Moderate review count (35) → steady demand
@@ -314,6 +325,7 @@ We constructed a **market segmentation model** using 10 engineered features:
 - Strategy: balanced pricing/capacity; most market volume (~48%)
 
 **Cluster 2: Premium Family/Group Rentals**
+
 - Highest pricing (CHF 245)
 - Largest capacity (4.5 guests) → 2+ bedrooms, full amenities
 - Lowest review count (28) → newer or less frequently rented
@@ -323,18 +335,21 @@ We constructed a **market segmentation model** using 10 engineered features:
 ### Cluster Visualizations
 
 **1. PCA Projection (k=3 Clusters)**
+
 - PC1 (44% variance) separates price/capacity dimension
 - PC2 (23% variance) captures review quality/popularity
 - Clusters form distinct, non-overlapping regions in 2D space
 - Interpretation: Market naturally segments on both **value** and **demand signals**
 
 **2. Price Distribution by Cluster (Box Plots)**
+
 - Cluster 0: tight distribution (CHF 100–160); few outliers
 - Cluster 1: wide distribution (CHF 120–220); moderate spread
 - Cluster 2: highest variance (CHF 180–320); luxury outliers present
 - Implication: Budget segment most homogeneous; premium segment most diverse
 
 **3. Accommodation Capacity by Cluster (Bar Plots)**
+
 - Clear separation: 0 ≤ 3 guests, 1 ≈ 3–4 guests, 2 ≥ 4 guests
 - Confirms clustering captures **real market segmentation** on functional property characteristics
 
