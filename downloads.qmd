@@ -34,46 +34,44 @@ The complete Python analysis notebook with all code cells, outputs, and markdown
 
 [Download Notebook](zurich_airbnb.ipynb){.btn .btn-secondary}
 
-### 📊 Processed Datasets
+### 📊 Raw Datasets
 
-| File | Description | Format |
-|------|-------------|--------|
-| `zurich_clean.csv` | Cleaned data with imputed values | CSV |
-| `df_regression.csv` | Data used for regression model | CSV |
-| `df_cluster.csv` | Data with cluster assignments (k=3) | CSV |
-| `cluster_profiles.csv` | Summary statistics by cluster | CSV |
+Source datasets from Inside Airbnb (publicly available):
+
+| File | Rows | Description |
+|------|------|-------------|
+| `zurich_listings.csv` | 2,529 | Primary analysis dataset |
+| `geneva_listings.csv` | - | Comparative region |
+| `vaud_listings.csv` | - | Comparative region |
+| `Inside Airbnb Data Dictionary.csv` | - | Full variable definitions |
+
+All datasets located in `/data/` folder of the repository.
 
 ---
 
 ## Visualizations
 
-All static visualizations saved individually for presentations:
+All static visualizations are generated and saved in the `output/` folder:
 
 ### Exploratory Analysis
 - `missing_values_analysis.png` - Missing data patterns
-- `price_distribution_neighborhoods.png` - Box plots by area
+- `price_distribution_neighborhoods.png` - Box plots by neighborhood
 - `room_type_composition.png` - Stacked bar chart
 - `price_vs_review_scores.png` - Scatter plot
 - `capacity_distribution.png` - Histograms
 - `correlation_heatmap.png` - Feature correlations
-- `word_cloud.png` - Text analysis
+- `word_cloud.png` - Text analysis of listing descriptions
 
 ### Regression Results
 - `correlation_with_price.png` - Feature correlations
 - `price_distribution_histograms.png` - Original vs. log-transformed
-
-### Classification
-- `knn_amenity_performance.png` - k-NN results
-- `decision_tree_visualization.png` - Tree structure
-- `confusion_matrices.png` - Classification metrics
+- `regression_predictions.png` - Actual vs. predicted values
 
 ### Clustering
 - `kmeans_silhouette_scores.png` - k-selection criterion
 - `kmeans_pca_clusters_k3.png` - 2D cluster visualization
 - `cluster_price_boxplot.png` - Price by cluster
 - `cluster_accommodates_barplot.png` - Capacity by cluster
-
-[Download All Visualizations (ZIP)](visualizations.zip){.btn .btn-secondary}
 
 ---
 
