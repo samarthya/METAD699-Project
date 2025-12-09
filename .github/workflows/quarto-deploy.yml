@@ -59,7 +59,7 @@ jobs:
           path: '_site'
 
       - name: Deploy to GitHub Pages
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/quarto'
         id: deployment
         uses: actions/deploy-pages@v4
 
