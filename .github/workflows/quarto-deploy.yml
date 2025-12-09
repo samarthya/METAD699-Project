@@ -39,7 +39,15 @@ jobs:
       - name: Install TeX (for PDF generation)
         run: |
           sudo apt-get update
-          sudo apt-get install -y texlive-xetex texlive-fonts-recommended texlive-latex-extra
+          sudo apt-get install -y \
+            texlive-latex-base \
+            texlive-latex-recommended \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            texlive-fonts-extra \
+            texlive-luatex \
+            texlive-xetex \
+            lmodern
 
       - name: Render Quarto website
         run: |
