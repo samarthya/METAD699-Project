@@ -80,12 +80,12 @@ All static visualizations are generated and saved in the `output/` folder:
 ### 🗺️ Interactive Map
 Folium map showing all Zurich Airbnb listings (1,000 sample) color-coded by room type.
 
-[Open Interactive Map](zurich_airbnb_map.html){.btn .btn-info}
+[Open Interactive Map](output/zurich_airbnb_map.html){.btn .btn-info}
 
 ### 🔥 Listing Density Heatmap
 Heat layer showing concentration of listings across Zurich neighborhoods.
 
-[Open Heatmap](zurich_airbnb_heatmap.html){.btn .btn-info}
+[Open Heatmap](output/zurich_airbnb_heatmap.html){.btn .btn-info}
 
 ---
 

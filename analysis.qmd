@@ -44,10 +44,11 @@ Airbnb has fundamentally transformed the tourism and short-term rental landscape
 Our dataset contained missing values across multiple dimensions:
 
 - **Text fields** (description, host_about): filled with empty strings for NLP safety
-- **Numeric capacity metrics** (bedrooms, beds, bathrooms): median-imputed
+- **Numeric capacity metrics** (bedrooms, beds): median-imputed
+- **Bathrooms column**: Original numeric field is 100% missing (deprecated by Airbnb), but we extract values from the `bathrooms_text` field using regex pattern matching (e.g., "1.5 baths" → 1.5), then median-impute remaining gaps
 - **Review scores**: median-imputed within review dimensions
-- **Bathrooms column**: dropped entirely (100% missing)
 - **Reviews per month**: set to 0 (indicates no activity)
+- **Feature Engineering**: Created `bathrooms_clean` (numeric extracted from text), `bathrooms_per_bedroom` (engineered for clustering), and `price_per_guest` (price divided by accommodation capacity)
 
 This approach preserved row count (2,529 listings) while handling missing data appropriately for each variable type.
 
