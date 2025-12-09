@@ -55,7 +55,6 @@ format:
   docx:
     toc: true
     toc-depth: 2
-    reference-doc: style-reference.docx
     
   pdf:
     toc: true
