@@ -1,0 +1,64 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - "*.qmd"
+    - "!README.md"
+    - "!*.md"
+execute:
+  freeze: auto
+  
+website:
+  title: "Zurich Airbnb Analysis"
+  
+  navbar:
+    background: primary
+    left:
+      - href: index.qmd
+        text: Home
+      - href: analysis.qmd
+        text: Full Analysis
+      - href: downloads.qmd
+        text: Reports & Data
+    right:
+      - icon: github
+        href: https://github.com/samarthya/METAD699-Project
+        
+  sidebar:
+    - id: analysis
+      title: "Analysis Sections"
+      contents:
+        - analysis.qmd
+        - text: Data Exploration
+          href: analysis.qmd#data-exploration
+        - text: Regression Analysis
+          href: analysis.qmd#regression-analysis
+        - text: Classification
+          href: analysis.qmd#classification
+        - text: Clustering
+          href: analysis.qmd#clustering
+        - text: Conclusions
+          href: analysis.qmd#conclusions
+          
+  page-footer:
+    center: "© 2025 METAD 699 Project | Zurich Airbnb Dataset"
+    
+format:
+  html:
+    theme: cosmo
+    code-fold: true
+    code-summary: "Show code"
+    toc: true
+    toc-depth: 2
+    smooth-scroll: true
+    
+  docx:
+    toc: true
+    toc-depth: 2
+    reference-doc: style-reference.docx
+    
+  pdf:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    colorlinks: true

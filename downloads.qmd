@@ -1,0 +1,147 @@
+---
+title: "Reports & Downloads"
+format:
+  html:
+    toc: true
+---
+
+## Project Reports
+
+Download formatted reports of the analysis for submission, presentation, or distribution:
+
+### 📄 PDF Report
+**Format**: PDF (printable, professional formatting)  
+**Size**: ~15 MB (includes all visualizations, tables, narrative)  
+**Use Case**: Academic submission, formal presentation
+
+[Download PDF](analysis_report.pdf){.btn .btn-primary}
+
+---
+
+### 📑 Word Document (DOCX)
+**Format**: Microsoft Word (.docx, editable)  
+**Size**: ~8 MB  
+**Use Case**: Editing before submission, institutional requirements
+
+[Download DOCX](analysis_report.docx){.btn .btn-primary}
+
+---
+
+## Data & Code
+
+### 🐍 Jupyter Notebook
+The complete Python analysis notebook with all code cells, outputs, and markdown documentation.
+
+[Download Notebook](zurich_airbnb.ipynb){.btn .btn-secondary}
+
+### 📊 Processed Datasets
+
+| File | Description | Format |
+|------|-------------|--------|
+| `zurich_clean.csv` | Cleaned data with imputed values | CSV |
+| `df_regression.csv` | Data used for regression model | CSV |
+| `df_cluster.csv` | Data with cluster assignments (k=3) | CSV |
+| `cluster_profiles.csv` | Summary statistics by cluster | CSV |
+
+---
+
+## Visualizations
+
+All static visualizations saved individually for presentations:
+
+### Exploratory Analysis
+- `missing_values_analysis.png` - Missing data patterns
+- `price_distribution_neighborhoods.png` - Box plots by area
+- `room_type_composition.png` - Stacked bar chart
+- `price_vs_review_scores.png` - Scatter plot
+- `capacity_distribution.png` - Histograms
+- `correlation_heatmap.png` - Feature correlations
+- `word_cloud.png` - Text analysis
+
+### Regression Results
+- `correlation_with_price.png` - Feature correlations
+- `price_distribution_histograms.png` - Original vs. log-transformed
+
+### Classification
+- `knn_amenity_performance.png` - k-NN results
+- `decision_tree_visualization.png` - Tree structure
+- `confusion_matrices.png` - Classification metrics
+
+### Clustering
+- `kmeans_silhouette_scores.png` - k-selection criterion
+- `kmeans_pca_clusters_k3.png` - 2D cluster visualization
+- `cluster_price_boxplot.png` - Price by cluster
+- `cluster_accommodates_barplot.png` - Capacity by cluster
+
+[Download All Visualizations (ZIP)](visualizations.zip){.btn .btn-secondary}
+
+---
+
+## Interactive Resources
+
+### 🗺️ Interactive Map
+Folium map showing all Zurich Airbnb listings (1,000 sample) color-coded by room type.
+
+[Open Interactive Map](zurich_airbnb_map.html){.btn .btn-info}
+
+### 🔥 Listing Density Heatmap
+Heat layer showing concentration of listings across Zurich neighborhoods.
+
+[Open Heatmap](zurich_airbnb_heatmap.html){.btn .btn-info}
+
+---
+
+## Data Dictionary
+
+**Key Variables** from Inside Airbnb dataset:
+
+| Variable | Description | Type | Values/Notes |
+|----------|-------------|------|------|
+| `price` | Nightly rental price | Numeric | CHF (Swiss Francs) |
+| `accommodates` | Number of guests | Integer | 1–16 |
+| `room_type` | Property type | Categorical | Entire home, Private room, Shared room, Hotel room |
+| `neighbourhood_cleansed` | Zurich district | Categorical | 10 neighborhoods analyzed |
+| `bedrooms`, `beds`, `bathrooms` | Property features | Numeric | Imputed for missing values |
+| `review_scores_rating` | Overall guest satisfaction | Numeric | 1.0–5.0 scale |
+| `host_response_time` | Host speed to inquiries | Categorical | Within an hour, few hours, day, few days, unknown |
+| `number_of_reviews` | Lifetime review count | Integer | 0–300+ |
+| `availability_365` | Days available per year | Integer | 0–365 |
+| `amenities` | List of offered amenities | Text | [Parsed for WiFi, kitchen, etc.] |
+
+---
+
+## Metadata
+
+**Analysis Date**: December 8, 2025  
+**Dataset**: Inside Airbnb - Zurich (public snapshot)  
+**Listings Analyzed**: 2,529 active properties  
+**Neighborhoods**: Top 10 by listing count  
+
+**Python Version**: 3.12+  
+**Key Libraries**: 
+- Data: Pandas, NumPy
+- Modeling: Scikit-learn, Statsmodels
+- NLP: Hugging Face Transformers
+- Visualization: Matplotlib, Seaborn, Folium
+
+---
+
+## Citation
+
+If referencing this analysis:
+
+> Zurich Airbnb Analysis (2025). METAD 699 Semester Project. Data source: Inside Airbnb (insideairbnb.com). Retrieved December 8, 2025.
+
+---
+
+## Questions?
+
+For technical questions about the analysis, refer to:
+
+- **Full Report**: [analysis.html](/analysis.html) - detailed methodology and interpretation
+- **Notebook**: Download the Jupyter notebook above for complete code and documentation
+- **GitHub**: [METAD699-Project](https://github.com/samarthya/METAD699-Project) - source code and version history
+
+---
+
+*All downloads are provided as-is for educational purposes.*

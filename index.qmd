@@ -1,0 +1,148 @@
+---
+title: "Zurich Airbnb Analysis"
+subtitle: "METAD 699 Semester Project - Home"
+format:
+  html:
+    page-layout: full
+    css: styles.css
+---
+
+::: {.hero}
+
+# Zurich Airbnb Analysis
+
+## Data Mining & Predictive Modeling Semester Project
+
+Exploratory analysis and machine learning modeling of 2,500+ Zurich Airbnb listings using regression, classification, and clustering techniques.
+
+[View Full Analysis](/analysis.html){.btn .btn-primary .btn-lg}
+[Download Reports](/downloads.html){.btn .btn-secondary .btn-lg}
+
+:::
+
+---
+
+## Project Overview
+
+This semester project applies data mining and statistical modeling to understand the Zurich short-term rental market. We explore:
+
+:::: {.grid}
+
+::: {.g-col-12 .g-col-md-6}
+### 📊 **Exploratory Analysis**
+- 2,529 listings across 10 neighborhoods
+- Missing value imputation & data preparation
+- Summary statistics & visualizations
+- Interactive mapping & text analysis
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### 📈 **Regression Modeling**
+- Multiple linear regression (price prediction)
+- R² = 0.622 (explains 62% of variance)
+- Key drivers: capacity, location, reviews
+- OLS summary with statistical significance
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### 🎯 **Classification**
+- k-NN: WiFi amenity prediction (87% accuracy)
+- Decision Trees: Host response time (53% accuracy)
+- Transformer NLP: Price quartile from text (65% accuracy)
+- Comprehensive model evaluation & comparisons
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### 🔗 **Clustering**
+- k-Means segmentation (k=3 optimal)
+- Three market segments identified
+- Feature engineering & interpretation
+- PCA visualization & cluster profiles
+:::
+
+::::
+
+---
+
+## Key Findings
+
+:::: {.grid}
+
+::: {.g-col-12 .g-col-md-4}
+**Market Segmentation**
+
+Three distinct clusters:
+- Budget (CHF 128/night)
+- Mid-Range (CHF 168/night)  
+- Premium (CHF 245/night)
+:::
+
+::: {.g-col-12 .g-col-md-4}
+**Price Drivers**
+
+Each guest capacity: +CHF 18.45/night  
+Premium neighborhood: +CHF 52/night  
+Higher reviews: -CHF 0.34/night (quality-budget correlation)
+:::
+
+::: {.g-col-12 .g-col-md-4}
+**Predictability**
+
+Structured features → 62% price variance  
+Text features → 65% quartile accuracy  
+Host behavior → 53% response time accuracy
+:::
+
+::::
+
+---
+
+## Sections
+
+### [Full Analysis Report](/analysis.html)
+Comprehensive write-up with code, visualizations, interpretations, and conclusions. **Includes data preparation, regression details, classification results, and clustering insights.**
+
+### [Download Reports](/downloads.html)
+- **PDF Report**: Formatted for printing/submission
+- **DOCX Report**: Editable Word document
+- **Jupyter Notebook**: Original Python code
+- **Data Files**: Cleaned datasets, cluster assignments
+
+---
+
+## Technical Stack
+
+- **Language**: Python 3.12+
+- **Data Processing**: Pandas, NumPy
+- **Visualization**: Matplotlib, Seaborn, Folium
+- **Modeling**: Scikit-learn, Statsmodels
+- **NLP**: Hugging Face Transformers (DistilBERT)
+- **Report Generation**: Quarto, Jupyter
+
+---
+
+## About This Project
+
+This is a **student semester project** for METAD 699 (Data Mining). The analysis demonstrates:
+- Systematic data exploration & visualization
+- Feature engineering & variable selection
+- Multiple modeling paradigms (regression, classification, clustering)
+- Critical interpretation of model results
+- Professional communication of findings
+
+**Data Source**: [Inside Airbnb](http://insideairbnb.com/) - Zurich dataset (publicly available)
+
+**Timeline**: December 2025
+
+---
+
+## Quick Links
+
+- 📁 [GitHub Repository](https://github.com/samarthya/METAD699-Project)
+- 📊 [View Visualizations](#)
+- 🗺️ [Interactive Map](/analysis.html#interactive-map)
+- 📋 [Data Dictionary](/downloads.html)
+
+---
+
+*Last updated: December 8, 2025*

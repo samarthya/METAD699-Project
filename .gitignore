@@ -1,4 +1,58 @@
-/data
-*.pdf
+# Quarto
+_site/
+.quarto/
+*.knit.md
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
 .venv/
-./output
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints
+*.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+.env
+.env.local
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+
+# Data/Output (optional - uncomment to include)
+data/
+output/
+old/
+
+# Keep tracked
+!.github/
+!.gitignore
+!requirements.txt
+!_quarto.yml
+!*.qmd
+/.quarto/
+**/*.quarto_ipynb
