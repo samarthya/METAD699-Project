@@ -1,4 +1,5 @@
-/data
+data/
 *.pdf
 .venv/
-./output
+output/
+old/
