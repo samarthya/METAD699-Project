@@ -148,6 +148,30 @@ If referencing this analysis:
 
 ---
 
+::: {.callout-tip collapse="true"}
+## 💡 Want to Reproduce This Analysis?
+
+**Download:**
+
+- [Jupyter Notebook](zurich_airbnb.ipynb)
+- [Requirements File](requirements.txt)
+
+**Key Dependencies:**
+
+```{python}
+#| echo: True
+#| eval: False
+
+pandas==2.3.3
+numpy==2.3.5
+scikit-learn==1.5.0
+folium==0.14.0
+plotly==5.18.0
+```
+:::
+
+---
+
 ## Questions?
 
 For technical questions about the analysis, refer to:

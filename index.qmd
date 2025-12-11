@@ -29,7 +29,9 @@ This semester project applies data mining and statistical modeling to understand
 :::: {.grid}
 
 ::: {.g-col-12 .g-col-md-6}
+
 ### 📊 **Exploratory Analysis**
+
 - 2,529 listings across 10 neighborhoods
 - Missing value imputation & data preparation
 - Summary statistics & visualizations
@@ -37,7 +39,9 @@ This semester project applies data mining and statistical modeling to understand
 :::
 
 ::: {.g-col-12 .g-col-md-6}
+
 ### 📈 **Regression Modeling**
+
 - Multiple linear regression (price prediction)
 - R² = 0.622 (explains 62% of variance)
 - Key drivers: capacity, location, reviews
@@ -45,7 +49,9 @@ This semester project applies data mining and statistical modeling to understand
 :::
 
 ::: {.g-col-12 .g-col-md-6}
+
 ### 🎯 **Classification**
+
 - k-NN: Dishwasher amenity prediction (64% accuracy)
 - Decision Trees: Host response time (53% accuracy)
 - Transformer NLP: Price quartile from text (65% accuracy)
@@ -53,7 +59,9 @@ This semester project applies data mining and statistical modeling to understand
 :::
 
 ::: {.g-col-12 .g-col-md-6}
+
 ### 🔗 **Clustering**
+
 - k-Means segmentation (k=3 optimal)
 - Three market segments identified
 - Feature engineering & interpretation
@@ -72,6 +80,7 @@ This semester project applies data mining and statistical modeling to understand
 **Market Segmentation**
 
 Three distinct clusters:
+
 - Budget (CHF 128/night)
 - Mid-Range (CHF 168/night)  
 - Premium (CHF 245/night)

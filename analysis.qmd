@@ -7,12 +7,34 @@ format:
   html:
     toc: true
     toc-depth: 3
-  docx: default
-  pdf: default
+    toc-location: left
+    toc-title: "Navigation"
+    number-sections: true
+    code-fold: true          # Hide code by default, show on click
+    code-summary: "Show Code"
+    code-tools: true         # Add code download button
+    theme: 
+      light: flatly
+      dark: darkly
+    css: styles.css
+    smooth-scroll: true
+    fig-width: 10
+    fig-height: 6
+    fig-dpi: 300
 execute:
-  echo: false
   warning: false
   message: false
+  echo: true
+---
+
+## Introduction
+
+Airbnb has fundamentally transformed the tourism and short-term rental landscape. Understanding price drivers, market segmentation, and demand patterns is valuable for hosts, investors, and platform operators. This project applies data mining and statistical modeling to the Zurich Airbnb market.
+
+**Dataset**: 2,529 listings from Inside Airbnb's Zurich dataset (latest snapshot)  
+**Outcome Variables**: Price (CHF), Host Response Time, Amenities, Market Clusters  
+**Methods**: Regression, Classification (k-NN, Decision Trees, Transformers), Clustering (k-Means)
+
 ---
 
 ## Executive Summary
@@ -25,16 +47,6 @@ This analysis explores the Zurich Airbnb market using data from Inside Airbnb. W
 - Zurich's Airbnb market segments into **3 distinct clusters**: budget shared rooms, mid-range apartments, and premium whole-home rentals
 - Host response time can be predicted with ~53% accuracy using listing features, though class imbalance limits performance
 - The market shows **significant price variation** by neighborhood, with Alt-Stadt commanding premium rates
-
----
-
-## Introduction
-
-Airbnb has fundamentally transformed the tourism and short-term rental landscape. Understanding price drivers, market segmentation, and demand patterns is valuable for hosts, investors, and platform operators. This project applies data mining and statistical modeling to the Zurich Airbnb market.
-
-**Dataset**: 2,529 listings from Inside Airbnb's Zurich dataset (latest snapshot)  
-**Outcome Variables**: Price (CHF), Host Response Time, Amenities, Market Clusters  
-**Methods**: Regression, Classification (k-NN, Decision Trees, Transformers), Clustering (k-Means)
 
 ---
 
@@ -76,6 +88,19 @@ These visualizations taught us several key lessons about Zurich's rental market.
 ---
 
 ## Interactive Map
+
+
+:::{.column-page}
+<iframe src="output/zurich_airbnb_map.html" width="100%" height="600px" frameborder="0"></iframe>
+:::
+
+::: {.callout-tip}
+
+**Interactive Map Usage:**
+- Click markers to see listing details (price, capacity, rating)
+- Use legend to filter by room type
+- Zoom to explore specific neighborhoods
+:::
 
 Our Folium map plots 1,000 sampled listings, color-coded by room type and overlays density heatmaps to reveal geographic clustering. Several key features stand out:
 
@@ -335,6 +360,8 @@ We constructed a **market segmentation model** using 10 engineered features:
 - Cluster 1: wide distribution (CHF 120–220); moderate spread
 - Cluster 2: highest variance (CHF 180–320); luxury outliers present
 - Implication: Budget segment most homogeneous; premium segment most diverse
+
+fig.show()  # This will embed interactively in Quarto
 
 **3. Accommodation Capacity by Cluster (Bar Plots)**
 

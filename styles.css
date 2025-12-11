@@ -220,3 +220,38 @@ footer {
     margin: 10px auto;
   }
 }
+
+
+/* Custom styling for better readability */
+.quarto-title-meta {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+}
+
+.callout-note {
+  border-left: 5px solid #2196F3;
+}
+
+.callout-warning {
+  border-left: 5px solid #ff9800;
+}
+
+.callout-tip {
+  border-left: 5px solid #4CAF50;
+}
+
+/* Make figures more prominent */
+.figure-caption {
+  font-style: italic;
+  color: #666;
+  text-align: center;
+  padding-top: 0.5rem;
+}
+
+/* Code blocks */
+pre {
+  border-left: 3px solid #667eea;
+}
