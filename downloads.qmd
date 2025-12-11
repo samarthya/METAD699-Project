@@ -11,19 +11,35 @@ Download formatted reports of the analysis for submission, presentation, or dist
 
 ### 📄 PDF Report
 **Format**: PDF (printable, professional formatting)  
-**Size**: ~15 MB (includes all visualizations, tables, narrative)  
+**Size**: ~83 KB (includes all visualizations, tables, narrative)  
 **Use Case**: Academic submission, formal presentation
 
-[Download PDF](analysis_report.pdf){.btn .btn-primary}
+[Download PDF](analysis.pdf){.btn .btn-primary}
 
 ---
 
 ### 📑 Word Document (DOCX)
 **Format**: Microsoft Word (.docx, editable)  
-**Size**: ~8 MB  
+**Size**: ~26 KB  
 **Use Case**: Editing before submission, institutional requirements
 
-[Download DOCX](analysis_report.docx){.btn .btn-primary}
+[Download DOCX](analysis.docx){.btn .btn-primary}
+
+---
+
+### 🎯 PowerPoint Presentation (PPTX)
+**Format**: Microsoft PowerPoint (.pptx, fully editable)  
+**Size**: ~3.8 MB (with embedded visualizations and charts)  
+**Use Case**: Conference presentations, stakeholder briefings, student presentations
+
+[Download PPTX](presentation.pptx){.btn .btn-success}
+
+**Features:**
+- 20+ professional slides with Reveal.js styling
+- All key graphics embedded (heatmaps, cluster plots, word clouds)
+- Interactive slide navigation
+- Narrative structure: Overview → Analysis → Insights → Recommendations
+- Downloadable directly from file or [view online](presentation.html)
 
 ---
 

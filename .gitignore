@@ -56,3 +56,4 @@ old/
 !*.qmd
 /.quarto/
 **/*.quarto_ipynb
+

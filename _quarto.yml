@@ -18,6 +18,8 @@ website:
         text: Home
       - href: analysis.qmd
         text: Full Analysis
+      - href: presentation.qmd
+        text: Presentation
       - href: downloads.qmd
         text: Reports & Data
     right:

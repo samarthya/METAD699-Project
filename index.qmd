@@ -46,7 +46,7 @@ This semester project applies data mining and statistical modeling to understand
 
 ::: {.g-col-12 .g-col-md-6}
 ### 🎯 **Classification**
-- k-NN: WiFi amenity prediction (87% accuracy)
+- k-NN: Dishwasher amenity prediction (64% accuracy)
 - Decision Trees: Host response time (53% accuracy)
 - Transformer NLP: Price quartile from text (65% accuracy)
 - Comprehensive model evaluation & comparisons
@@ -89,7 +89,7 @@ Higher reviews: -CHF 0.34/night (quality-budget correlation)
 **Predictability**
 
 Structured features → 62% price variance  
-Text features → 65% quartile accuracy  
+Text features → 64% quartile accuracy  
 Host behavior → 53% response time accuracy
 :::
 
@@ -100,9 +100,11 @@ Host behavior → 53% response time accuracy
 ## Sections
 
 ### [Full Analysis Report](/analysis.html)
+
 Comprehensive write-up with code, visualizations, interpretations, and conclusions. **Includes data preparation, regression details, classification results, and clustering insights.**
 
 ### [Download Reports](/downloads.html)
+
 - **PDF Report**: Formatted for printing/submission
 - **DOCX Report**: Editable Word document
 - **Jupyter Notebook**: Original Python code
@@ -124,6 +126,7 @@ Comprehensive write-up with code, visualizations, interpretations, and conclusio
 ## About This Project
 
 This is a **student semester project** for METAD 699 (Data Mining). The analysis demonstrates:
+
 - Systematic data exploration & visualization
 - Feature engineering & variable selection
 - Multiple modeling paradigms (regression, classification, clustering)

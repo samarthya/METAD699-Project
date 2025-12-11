@@ -1,0 +1,487 @@
+---
+title: "Zurich Airbnb Analysis"
+subtitle: "Data Mining & Predictive Modeling"
+author: "METAD 699 Team"
+date: "December 2025"
+format:
+  revealjs:
+    theme: black
+    transition: slide
+    width: 1400
+    height: 900
+    margin: 0.1
+    embed-resources: true
+    slide-number: true
+---
+
+# Setting the Stage: Understanding Zurich's Rental Market
+
+---
+
+## The Challenge
+
+How can Zurich Airbnb hosts understand their market position?
+
+::: {.incremental}
+
+- **Fragmented information:** 2,529 listings across 10 neighborhoods
+- **Pricing uncertainty:** What should I charge for my property?
+- **Competitive gaps:** How do I compare to similar properties?
+- **Investment decisions:** Where should I focus improvement efforts?
+
+**Solution:** Data-driven analysis of market structure, pricing drivers, and natural segments
+
+:::
+
+---
+
+## Dataset: Comprehensive Zurich Airbnb Market
+
+**Data Coverage:**
+
+- **2,529** complete listings analyzed
+- **10 neighborhoods** with 50+ features each
+- **Sources:** Inside Airbnb (publicly available)
+- **Features:** Price, capacity, amenities, quality signals, descriptions
+
+---
+
+## Data Quality: Missing Values Challenge
+
+![Missing Values Handling](output/missing_values_analysis.png){width="90%" fig-align="center"}
+
+**Key Finding:** ~100% missing "bathrooms" data required feature engineering; other fields nearly complete
+
+---
+
+## Market Composition: Room Type Distribution
+
+![Room Type Composition](output/room_type_composition.png){width="80%" fig-align="center"}
+
+**Structure:** 60% entire homes/apartments; 40% private/shared rooms
+
+---
+
+## Price Distribution by Neighborhood
+
+![Price Distribution Neighborhoods](output/price_distribution_neighborhoods.png){width="85%" fig-align="center"}
+
+**Insight:** Alt-Stadt commands 2–3x premium over budget neighborhoods; natural price stratification by location
+
+---
+
+# Exploratory Analysis: Market Insights
+
+---
+
+## Price Distribution: Histogram Analysis
+
+![Price Distribution Histograms](output/price_distribution_histograms.png){width="85%" fig-align="center"}
+
+Median: **CHF 160/night** | Range: CHF 50–450+ | Right-skewed with luxury outliers
+
+---
+
+## Capacity Distribution: Guest Accommodation
+
+![Capacity Distribution](output/capacity_distribution.png){width="85%" fig-align="center"}
+
+**Peak:** 2–3 guest properties dominate (couples, small families); few large-group properties
+
+---
+
+## Word Cloud: Host Marketing Strategy
+
+![Word Cloud](output/word_cloud.png){width="85%" fig-align="center"}
+
+**Key insight:** "Location" dominates host descriptions — but does text quality drive price discovery?
+
+---
+
+## Feature Correlations: What Drives Price?
+
+![Correlation Heatmap](output/correlation_heatmap.png){width="90%" fig-align="center"}
+
+**Strong signals:** Accommodates, beds, review scores, neighborhood | **Weak signals:** Description length, host experience
+
+---
+
+## Price vs Review Scores: Quality Correlation
+
+![Price vs Review Scores](output/price_vs_review_scores.png){width="85%" fig-align="center"}
+
+**Finding:** Higher-priced listings get better reviews (R = 0.45) — likely price determines demand, not reverse
+
+---
+
+# Building Credibility: Regression Modeling
+
+---
+
+## Regression Analysis: Price Prediction Model
+
+### Research Question
+What features determine nightly price in Zurich's Airbnb market?
+
+### Methodology
+- **Variable Selection:** Correlation screening + VIF analysis for multicollinearity
+- **Target:** Log-transformed price (handles right-skewed distribution)
+- **Features:** Accommodates, beds, review scores, neighborhood dummies
+- **Training:** 80% of 2,529 listings; tested on holdout set
+
+---
+
+## Feature Engineering: Technical Decisions
+
+::: {.columns}
+
+::: {.column width="50%"}
+**Why Log Transformation?**
+- Raw prices are right-skewed (outliers inflate residuals)
+- Log scale stabilizes variance
+- Linear regression assumptions better met
+- Predictions: exponentiate back to CHF
+
+:::
+
+::: {.column width="50%"}
+**Multicollinearity Management:**
+- Removed highly correlated features (VIF > 5)
+- Kept: accommodates, beds, review scores
+- Dropped: redundant neighborhood indicators
+- Result: Interpretable coefficients
+
+:::
+
+:::
+
+---
+
+## Regression Results: Model Performance
+
+![Regression Predictions](output/regression_predictions.png){width="100%" fig-align="center"}
+
+**R² = 0.622** (explains 62% of price variance) | **RMSE = CHF 42.50** | **Train/test gap < 2%** (no overfitting)
+
+---
+
+## What Drives Price? (Regression Coefficients)
+
+::: {.columns}
+
+::: {.column width="50%"}
+**Numeric Features (Per Unit):**
+- **+CHF 18.45** per accommodates
+- **+CHF 12.67** per bed
+- **+CHF 1.20** per review point
+
+:::
+
+::: {.column width="50%"}
+**Neighborhood Premiums:**
+- **Alt-Stadt:** +CHF 86 (luxury)
+- **City-center:** +CHF 30–60
+- **Suburbs:** Baseline (–CHF 20–40)
+
+Neighborhood alone = **30% of price variance**
+
+:::
+
+:::
+
+---
+
+## Model Limitations: Honest Assessment
+
+**R² = 0.622 means:**
+- ✓ 62% of price is explainable through measurable features
+- ✗ 38% driven by unobserved factors: host reputation, exact location charm, seasonal demand, listing photos quality
+
+**Takeaway:** Regression captures PRIMARY drivers but markets have inherent randomness
+
+---
+
+# Classification: Predicting Listing Attributes
+
+---
+
+## Classification I: k-NN Dishwasher Prediction
+
+### Model Details
+- **Algorithm:** k-Nearest Neighbors
+- **Optimal k:** 7 (via cross-validation)
+- **Target:** Dishwasher amenity (binary)
+- **Accuracy:** **64%** (baseline: 56%)
+
+**Finding:** Dishwasher correlates with price tier, capacity, and premium neighborhoods
+
+---
+
+## Classification II: Decision Tree - Host Response Time
+
+### Model Details
+- **Algorithm:** Decision Tree (max_depth=8, balanced weights)
+- **Target:** Host response time (binary fast/slow)
+- **Accuracy:** **53%** (baseline: 48%)
+
+**Challenge:** Responsiveness influenced by unobserved host factors (automation, workload, personality)
+
+**Lesson:** Behavioral attributes are weak predictors from listing features alone
+
+---
+
+## Classification III: Text Analysis - Price Quartile
+
+### Model Details
+- **Algorithm:** Random Forest on TF-IDF text features
+- **Features:** Word frequency vectors from descriptions
+- **Target:** Price quartile (Q1/Q2/Q3/Q4)
+- **Accuracy:** **65%** (test set)
+
+**Critical Finding:** Text predicts only 15% better than baseline
+
+**Interpretation:** Premium hosts use premium language BECAUSE they're selling premium property — not the reverse. Description rewriting alone won't move you upmarket.
+
+---
+
+## Classification Summary: Model Comparison
+
+| Model | Task | Accuracy | Baseline | Δ | Interpretation |
+|-------|------|----------|----------|---|---|
+| k-NN | Dishwasher | 64% | 56% | +8% | Moderate predictability |
+| Decision Tree | Response Time | 53% | 48% | +5% | Weak behavioral signal |
+| Random Forest | Price Quartile | 65% | 50% | +15% | Limited text power |
+
+**Message:** Listing features constrain outcomes more than they enable price discovery
+
+---
+
+# Clustering: Market Segmentation
+
+---
+
+## Clustering Methodology: Why k=3?
+
+**k-Means Analysis: Finding Optimal Clusters**
+
+![k-Means Silhouette Scores](output/kmeans_silhouette_scores.png){width="80%" fig-align="center"}
+
+**Silhouette score peaks at k=3 (0.54)** — mathematically justified 3-segment market
+
+---
+
+## Cluster Separation: Visual Proof (PCA)
+
+![k-Means PCA Clusters](output/kmeans_pca_clusters_k3.png){width="90%" fig-align="center"}
+
+**PC1 (36% variance):** Price × Capacity trade-off | **PC2 (18% variance):** Quality/demand signals
+
+**Three distinct color clouds = natural market divisions** (not arbitrary)
+
+---
+
+## Cluster 1: Budget Segment (CHF 128/night)
+
+::: {.columns}
+
+::: {.column width="50%"}
+**Profile:**
+- **Price:** CHF 128/night median
+- **Capacity:** 2.2 guests avg
+- **Type:** Shared/private rooms, small studios
+- **Features:** Basic amenities, high turnover
+
+:::
+
+::: {.column width="50%"}
+**Host Strategy:**
+- Volume optimization
+- Automated check-ins
+- Portfolio scale
+- Minimal personalization
+
+:::
+
+:::
+
+---
+
+## Cluster 2: Mid-Range Segment (CHF 168/night)
+
+::: {.columns}
+
+::: {.column width="50%"}
+**Profile:**
+- **Price:** CHF 168/night median
+- **Capacity:** 3.1 guests avg
+- **Type:** Private apartments, small homes
+- **Features:** Good reviews, reliable amenities
+
+:::
+
+::: {.column width="50%"}
+**Host Strategy:**
+- Mainstream reliability
+- Review optimization
+- Personal touch
+- Consistent quality
+
+:::
+
+:::
+
+---
+
+## Cluster 3: Premium Segment (CHF 245/night)
+
+::: {.columns}
+
+::: {.column width="50%"}
+**Profile:**
+- **Price:** CHF 245/night median
+- **Capacity:** 4.5 guests avg
+- **Type:** Whole homes, villas, penthouses
+- **Features:** Premium amenities, unique experiences
+
+:::
+
+::: {.column width="50%"}
+**Host Strategy:**
+- Experience differentiation
+- Affinity groups (families, teams)
+- Lower occupancy, higher margins
+- Niche positioning
+
+:::
+
+:::
+
+---
+
+## Cluster Price Structure: Not All Markets Are Alike
+
+![Cluster Price Distribution](output/cluster_price_boxplot.png){width="85%" fig-align="center"}
+
+- **Budget:** CHF 100–160 (tight, predictable)
+- **Mid-range:** CHF 120–220 (moderate variance)
+- **Premium:** CHF 180–450+ (high variance, niche outliers)
+
+---
+
+## Cluster Capacity: Guest Count Drives Segmentation
+
+![Cluster Capacity Distribution](output/cluster_accommodates_barplot.png){width="85%" fig-align="center"}
+
+**Primary segmenter:** Property accommodates capacity (0–2, 3–4, 4+) creates hard market boundaries
+
+---
+
+## Cluster Market Share: 74% Mid-Range Dominance
+
+::: {.columns}
+
+::: {.column width="50%"}
+**Segment Distribution:**
+- Budget: 19% (504 listings)
+- Mid-range: 74% (1,875 listings)
+- Premium: 7% (150 listings)
+
+:::
+
+::: {.column width="50%"}
+**Business Implication:**
+Most hosts compete in mid-range; differentiation hardest here; budget/premium niches may be less saturated
+
+:::
+
+:::
+
+---
+
+# Translating Models to Action
+
+---
+
+## The Four Key Insights
+
+### 1. **Geography Drives Price** (62% R²)
+Location and capacity are pricing kingmakers — invest in property upgrades before marketing
+
+### 2. **Three Natural Market Segments Exist**
+Budget, mid-range, premium clusters enable realistic benchmarking against true peers
+
+### 3. **Text Doesn't Drive Price Discovery**
+Description quality predicts only 65% — improve amenities first, copy second
+
+### 4. **Segment-Specific Strategies Win**
+Budget: automation & scale | Mid-range: reliability & reviews | Premium: experience & niche
+
+---
+
+## Who Benefits from This Analysis?
+
+### 🏠 **Individual Hosts**
+- Use regression model as CHF pricing benchmark
+- Plug in: accommodates, neighborhood, review score
+- Compare actual vs. market-rate recommendation
+- Identify under/overpricing vs. true comparables
+
+### 🏢 **Property Management Companies**
+- Categorize portfolio into budget/mid-range/premium
+- Allocate management effort proportionally
+- Benchmark underperformers against cluster medians
+
+### 📊 **City Planning & Tourism**
+- Understand STR supply by segment
+- Track neighborhood concentration risk
+- Support regulatory decision-making
+
+---
+
+## Practical Next Steps for Hosts
+
+:::{.incremental}
+
+1. **Pricing Decision:**
+   - Plug property details into regression model
+   - Compare to CHF benchmark
+   - Retest after property upgrades
+
+2. **Upgrade Strategy:**
+   - Identify which cluster you occupy
+   - Does dishwasher move you upmarket? (Probably within same cluster)
+   - Focus on capacity/neighborhood before description polish
+
+3. **Competitive Benchmarking:**
+   - Find true peers in your cluster
+   - Compare occupancy, reviews, turnover
+   - Copy segment-specific strategies (don't compete across segments)
+
+:::
+
+---
+
+## Closing: From Data to Decisions
+
+**This analysis reveals market truth:**
+
+- **62% of price is explainable** through structure; 38% is inherent market complexity
+- **Geography + capacity dominate** — structural constraints > operational excellence
+- **Three distinct segments exist** — don't compete across them; dominate yours
+- **Product optimization > marketing** — text matters less than bathrooms, dishwasher, location
+
+**For Zurich's 2,529 Airbnb hosts:** Know your market, know your segment, act strategically.
+
+---
+
+## Thank You
+
+**Questions?**
+
+**Full Report:** github.com/samarthya/METAD699-Project
+
+**Analysis Available in:**
+
+- 📄 PDF Report (technical appendix)
+- 📑 Word Document (editable)
+- 🎯 This Presentation (PPTX download)
