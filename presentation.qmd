@@ -163,6 +163,8 @@ What features determine nightly price in Zurich's Airbnb market?
 
 **R² = 0.622** (explains 62% of price variance) | **RMSE = CHF 42.50** | **Train/test gap < 2%** (no overfitting)
 
+**Key Insight:** Model generalizes well — structural features (location, capacity) dominate pricing, not marketing or host behavior.
+
 ---
 
 ## What Drives Price? (Regression Coefficients)
@@ -233,14 +235,27 @@ Neighborhood alone = **30% of price variance**
 ## Classification III: Text Analysis - Price Quartile
 
 ### Model Details
-- **Algorithm:** Random Forest on TF-IDF text features
-- **Features:** Word frequency vectors from descriptions
+
+- **Algorithm:** TF-IDF + Random Forest (transformer-based text features)
+- **Features:** Text embeddings from descriptions, host_about, amenities
 - **Target:** Price quartile (Q1/Q2/Q3/Q4)
 - **Accuracy:** **65%** (test set)
 
-**Critical Finding:** Text predicts only 15% better than baseline
+**Critical Finding:** Text predicts only 15% better than baseline (50% → 65%)
 
 **Interpretation:** Premium hosts use premium language BECAUSE they're selling premium property — not the reverse. Description rewriting alone won't move you upmarket.
+
+![Word cloud showing marketing language patterns](output/word_cloud.png){width="85%" fig-align="center"}
+
+---
+
+## Fictional Listing Prediction Example
+
+**Test Case:** A 3.5-room apartment near Zurich Airport with premium amenities
+
+**Model Prediction:** Q1 (Budget) with **28% confidence** — nearly uniform probabilities across all quartiles
+
+**Key Insight:** Mixed signals (premium amenities + airport location) create prediction uncertainty, demonstrating that text alone is insufficient for reliable price prediction
 
 ---
 
@@ -250,7 +265,7 @@ Neighborhood alone = **30% of price variance**
 |-------|------|----------|----------|---|---|
 | k-NN | Dishwasher | 64% | 56% | +8% | Moderate predictability |
 | Decision Tree | Response Time | 53% | 48% | +5% | Weak behavioral signal |
-| Random Forest | Price Quartile | 65% | 50% | +15% | Limited text power |
+| TF-IDF + RF | Price Quartile | 65% | 50% | +15% | Limited text power |
 
 **Message:** Listing features constrain outcomes more than they enable price discovery
 
@@ -274,7 +289,7 @@ Neighborhood alone = **30% of price variance**
 
 ![k-Means PCA Clusters](output/kmeans_pca_clusters_k3.png){width="90%" fig-align="center"}
 
-**PC1 (36% variance):** Price × Capacity trade-off | **PC2 (18% variance):** Quality/demand signals
+**PC1 (44% variance):** Price × Capacity trade-off | **PC2 (23% variance):** Quality/demand signals
 
 **Three distinct color clouds = natural market divisions** (not arbitrary)
 
@@ -376,21 +391,21 @@ Neighborhood alone = **30% of price variance**
 
 ---
 
-## Cluster Market Share: 74% Mid-Range Dominance
+## Cluster Market Share: 48% Mid-Range Dominance
 
 ::: {.columns}
 
 ::: {.column width="50%"}
 **Segment Distribution:**
-- Budget: 19% (504 listings)
-- Mid-range: 74% (1,875 listings)
-- Premium: 7% (150 listings)
+- Budget: 35% (891 listings)
+- Mid-range: 48% (1,204 listings)
+- Premium: 17% (434 listings)
 
 :::
 
 ::: {.column width="50%"}
 **Business Implication:**
-Most hosts compete in mid-range; differentiation hardest here; budget/premium niches may be less saturated
+Mid-range represents largest segment; budget and premium segments offer distinct market niches with different operational strategies
 
 :::
 

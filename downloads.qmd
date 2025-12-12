@@ -3,52 +3,49 @@ title: "Reports & Downloads"
 format:
   html:
     toc: true
+    css: styles.css
 ---
 
 ## Project Reports
 
-Download formatted reports of the analysis for submission, presentation, or distribution:
+Access formatted reports and presentations of the analysis:
 
-### 📄 PDF Report
-**Format**: PDF (printable, professional formatting)  
-**Size**: ~83 KB (includes all visualizations, tables, narrative)  
-**Use Case**: Academic submission, formal presentation
+### 📊 Full Analysis Report
+**Format**: HTML (interactive, web-based)
+**Content**: Complete analysis with code, visualizations, interpretations, and conclusions
+**Use Case**: Comprehensive review, detailed methodology, interactive exploration
 
-[Download PDF](analysis.pdf){.btn .btn-primary}
+[View Full Analysis](/analysis.html){.btn .btn-primary}
 
----
-
-### 📑 Word Document (DOCX)
-**Format**: Microsoft Word (.docx, editable)  
-**Size**: ~26 KB  
-**Use Case**: Editing before submission, institutional requirements
-
-[Download DOCX](analysis.docx){.btn .btn-primary}
+**Note**: PDF and DOCX versions can be generated from the Quarto source files using `quarto render analysis.qmd --to pdf` or `quarto render analysis.qmd --to docx`
 
 ---
 
-### 🎯 PowerPoint Presentation (PPTX)
-**Format**: Microsoft PowerPoint (.pptx, fully editable)  
-**Size**: ~3.8 MB (with embedded visualizations and charts)  
+### 🎯 Presentation Slides
+**Format**: HTML (Reveal.js interactive presentation)
+**Content**: 20+ professional slides with key findings and visualizations
 **Use Case**: Conference presentations, stakeholder briefings, student presentations
 
-[Download PPTX](presentation.pptx){.btn .btn-success}
+[View Presentation](/presentation.html){.btn .btn-success}
 
 **Features:**
-- 20+ professional slides with Reveal.js styling
-- All key graphics embedded (heatmaps, cluster plots, word clouds)
 - Interactive slide navigation
+- All key graphics embedded (heatmaps, cluster plots, word clouds)
 - Narrative structure: Overview → Analysis → Insights → Recommendations
-- Downloadable directly from file or [view online](presentation.html)
+- Responsive design for various screen sizes
 
 ---
 
 ## Data & Code
 
 ### 🐍 Jupyter Notebook
-The complete Python analysis notebook with all code cells, outputs, and markdown documentation.
+The complete Python analysis notebook with all code cells, outputs, and markdown documentation. This is the source file used to generate all analyses, visualizations, and models.
 
 [Download Notebook](zurich_airbnb.ipynb){.btn .btn-secondary}
+
+**File Size**: ~15 MB (includes all outputs and visualizations)
+**Format**: Jupyter Notebook (.ipynb)
+**Requirements**: Python 3.12+, see setup instructions in [README.md](/README.md)
 
 ### 📊 Raw Datasets
 
@@ -124,19 +121,22 @@ Heat layer showing concentration of listings across Zurich neighborhoods.
 
 ---
 
-## Metadata
+## Project Metadata
 
-**Analysis Date**: December 8, 2025  
-**Dataset**: Inside Airbnb - Zurich (public snapshot)  
-**Listings Analyzed**: 2,529 active properties  
-**Neighborhoods**: Top 10 by listing count  
+**Analysis Date**: December 8, 2025
+**Dataset**: Inside Airbnb - Zurich (public snapshot)
+**Listings Analyzed**: 2,529 active properties
+**Neighborhoods**: Top 10 by listing count
+**Project Type**: METAD 699 Semester Project - Data Mining
 
-**Python Version**: 3.12+  
-**Key Libraries**: 
-- Data: Pandas, NumPy
-- Modeling: Scikit-learn, Statsmodels
-- NLP: Hugging Face Transformers
-- Visualization: Matplotlib, Seaborn, Folium
+**Technical Stack**:
+- **Language**: Python 3.12+
+- **Package Manager**: uv
+- **Data Processing**: Pandas >= 2.3.3, NumPy >= 2.3.5
+- **Modeling**: Scikit-learn >= 1.7.2, Statsmodels >= 0.14.5
+- **NLP**: Hugging Face Transformers (DistilBERT)
+- **Visualization**: Matplotlib >= 3.10.7, Seaborn >= 0.13.2, Folium >= 0.20.0
+- **Report Generation**: Quarto, Jupyter
 
 ---
 
@@ -151,23 +151,40 @@ If referencing this analysis:
 ::: {.callout-tip collapse="true"}
 ## 💡 Want to Reproduce This Analysis?
 
-**Download:**
+**Setup Instructions:**
 
-- [Jupyter Notebook](zurich_airbnb.ipynb)
-- [Requirements File](requirements.txt)
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/samarthya/METAD699-Project.git
+   cd METAD699-Project
+   ```
 
-**Key Dependencies:**
+2. **Install dependencies using uv:**
+   ```bash
+   uv sync
+   ```
 
-```{python}
-#| echo: True
-#| eval: False
+3. **Run the notebook:**
+   ```bash
+   uv run jupyter notebook zurich_airbnb.ipynb
+   ```
 
-pandas==2.3.3
-numpy==2.3.5
-scikit-learn==1.5.0
-folium==0.14.0
-plotly==5.18.0
-```
+**Project Files:**
+- [Jupyter Notebook](zurich_airbnb.ipynb) - Main analysis
+- [pyproject.toml](pyproject.toml) - Project dependencies (uses uv package manager)
+- [README.md](README.md) - Setup and usage instructions
+
+**Key Dependencies** (from pyproject.toml):
+- pandas >= 2.3.3
+- numpy >= 2.3.5
+- scikit-learn >= 1.7.2
+- folium >= 0.20.0
+- matplotlib >= 3.10.7
+- seaborn >= 0.13.2
+- statsmodels >= 0.14.5
+- transformers (Hugging Face) for NLP tasks
+
+See [README.md](/README.md) for complete setup instructions.
 :::
 
 ---

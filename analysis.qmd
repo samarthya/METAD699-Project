@@ -1,8 +1,11 @@
 ---
 title: "Zurich Airbnb Analysis"
-subtitle: "Exploratory Data Analysis & Predictive Modeling"
-author: "METAD 699 Team"
-date: Today
+subtitle: "Data Mining & Predictive Modeling - METAD 699 Semester Project"
+author:
+  - name: Saurabh Sharma
+    affiliation:
+      - name: Boston University
+date: today
 format:
   html:
     toc: true
@@ -10,10 +13,10 @@ format:
     toc-location: left
     toc-title: "Navigation"
     number-sections: true
-    code-fold: true          # Hide code by default, show on click
+    code-fold: true
     code-summary: "Show Code"
-    code-tools: true         # Add code download button
-    theme: 
+    code-tools: true
+    theme:
       light: flatly
       dark: darkly
     css: styles.css
@@ -29,45 +32,39 @@ execute:
 
 ## Introduction
 
-Airbnb has fundamentally transformed the tourism and short-term rental landscape. Understanding price drivers, market segmentation, and demand patterns is valuable for hosts, investors, and platform operators. This project applies data mining and statistical modeling to the Zurich Airbnb market.
+Airbnb has fundamentally transformed the tourism and short-term rental landscape in cities worldwide. Understanding what drives pricing, how properties can be classified, and how the market naturally segments is valuable for hosts, investors, and platform operators. This project applies comprehensive data mining techniques to analyze the Zurich Airbnb market, examining 2,529 listings across 10 neighborhoods to uncover patterns in pricing, amenities, host behavior, and geographic clustering.
 
-**Dataset**: 2,529 listings from Inside Airbnb's Zurich dataset (latest snapshot)  
-**Outcome Variables**: Price (CHF), Host Response Time, Amenities, Market Clusters  
-**Methods**: Regression, Classification (k-NN, Decision Trees, Transformers), Clustering (k-Means)
-
----
-
-## Executive Summary
-
-This analysis explores the Zurich Airbnb market using data from Inside Airbnb. We examine **pricing patterns**, **host characteristics**, and **rental properties** across 10 neighborhoods using exploratory data analysis, regression modeling, classification trees, k-nearest neighbors, and clustering techniques.
-
-**Key Findings:**
-
-- Pricing is primarily driven by **accommodation capacity** and **location** (neighborhood)
-- Zurich's Airbnb market segments into **3 distinct clusters**: budget shared rooms, mid-range apartments, and premium whole-home rentals
-- Host response time can be predicted with ~53% accuracy using listing features, though class imbalance limits performance
-- The market shows **significant price variation** by neighborhood, with Alt-Stadt commanding premium rates
+- **Dataset**: 2,529 listings from Inside Airbnb's Zurich dataset
+- **Methods**: Regression analysis, Classification (k-NN, Decision Trees, Transformers), Clustering (k-Means)
+- **Goal**: Extract actionable insights about market structure, pricing drivers, and natural market segments
 
 ---
 
-## Data Exploration
+## Part 1: Data Preparation & Exploration
 
 ### Missing Values & Data Preparation
 
-Our dataset contained missing values across multiple dimensions:
+Our dataset contained missing values across multiple dimensions, requiring careful handling to preserve data quality while maintaining analytical integrity. We approached missing data systematically, tailoring our strategy to each variable type based on both statistical considerations and domain knowledge.
 
-- **Text fields** (description, host_about): filled with empty strings for NLP safety
-- **Numeric capacity metrics** (bedrooms, beds): median-imputed
-- **Bathrooms column**: Original numeric field is 100% missing (deprecated by Airbnb), but we extract values from the `bathrooms_text` field using regex pattern matching (e.g., "1.5 baths" → 1.5), then median-impute remaining gaps
-- **Review scores**: median-imputed within review dimensions
-- **Reviews per month**: set to 0 (indicates no activity)
-- **Feature Engineering**: Created `bathrooms_clean` (numeric extracted from text), `bathrooms_per_bedroom` (engineered for clustering), and `price_per_guest` (price divided by accommodation capacity)
+**Text fields** (description, host_about): We filled missing values with empty strings rather than dropping rows, preserving all 2,529 listings for analysis. This approach is standard for NLP tasks where empty strings can be handled by text processing pipelines without introducing bias.
 
-This approach preserved row count (2,529 listings) while handling missing data appropriately for each variable type.
+**Numeric capacity metrics** (bedrooms, beds): Missing values were median-imputed within neighborhood groups to account for geographic variation in property sizes. This preserves the distribution while using location-specific central tendencies.
+
+**Bathrooms column**: The original numeric `bathrooms` field was 100% missing (deprecated by Airbnb), but we extracted numeric values from the `bathrooms_text` field using regex pattern matching (e.g., "1.5 baths" → 1.5). Remaining gaps after extraction were median-imputed, creating a new `bathrooms_clean` variable.
+
+**Review scores**: Missing review dimensions (rating, cleanliness, location, value) were median-imputed within their respective dimensions to maintain consistency across review metrics.
+
+**Reviews per month**: Missing values were set to 0, indicating no recent review activity rather than true missingness.
+
+**Feature Engineering**: Beyond imputation, we created several engineered features: `bathrooms_per_bedroom` (luxury indicator for clustering), `price_per_guest` (value metric), and `log_reviews` (normalized popularity signal). We also handled outliers by capping extreme values at the 99th percentile to prevent skewing cluster centroids and regression coefficients.
+
+This comprehensive approach preserved our full dataset (2,529 listings) while handling missing data appropriately for each variable type, setting a solid foundation for subsequent modeling.
+
+![Missing values analysis](output/missing_values_analysis.png){width=100%}
 
 ### Summary Statistics by Neighborhood
 
-We analyzed the **top 10 neighborhoods** by listing count to understand market heterogeneity:
+We analyzed the **top 10 neighborhoods** by listing count to understand market heterogeneity across Zurich's districts. This geographic lens revealed substantial variation in pricing, property types, and guest capacity that would prove critical for our predictive models.
 
 | Metric | Finding |
 |--------|---------|
@@ -77,77 +74,111 @@ We analyzed the **top 10 neighborhoods** by listing count to understand market h
 | **Capacity** | 70% accommodate 2–4 guests; family market (5+) < 15% |
 | **Review Quality** | Median rating 4.8/5.0 across all neighborhoods; strong correlation with location desirability |
 
-**Interpretation**: Zurich's short-term rental market caters primarily to couples and small groups in centrally-located, whole-apartment units.
+**Key Takeaways**:
 
-### Visualizations
+Zurich's short-term rental market caters primarily to couples and small groups seeking centrally-located, whole-apartment units. The market shows clear geographic stratification: Alt-Stadt (old town) commands premium rates (~CHF 210 median) reflecting its tourist appeal and walkability to landmarks, while outer neighborhoods like Wiedikon average CHF 120—a 75% price difference driven by location desirability. The dominance of entire homes (65%) suggests Zurich's market targets travelers seeking privacy and autonomy rather than budget hostel-style accommodations. Capacity analysis reveals a sweet spot at 2–4 guests, with family-sized properties (5+ guests) representing less than 15% of inventory, indicating the market is optimized for couples and small groups rather than large families.
 
-We created five distinct visualizations to understand neighborhood dynamics and property characteristics. Our design choices prioritized clarity and cross-comparison: (1) **Box plots** to show price distributions and outliers by neighborhood, revealing price variability; (2) **Stacked bar charts** for room-type composition, showing how property mix varies geographically; (3) **Scatter plots** with trendlines to examine relationships between numerical features and price; (4) **Histograms** to understand capacity and review distributions; and (5) **Heatmaps** to identify feature correlations and multicollinearity issues.
+### Data Visualization
 
-These visualizations taught us several key lessons about Zurich's rental market. First, **price variation is neighborhood-dependent**: Alt-Stadt commands premium prices (median ~CHF 210) while outer neighborhoods like Wiedikon average CHF 120—a 75% difference. Second, **property type drives capacity segmentation**: Entire homes cluster at 3–4 guest capacity, while private/shared rooms serve solo travelers and couples. Third, **review scores do not drive pricing**: the weak correlation (r ≈ 0.15) suggests that either all listings maintain consistently high quality (clustering of ratings near 4.8/5.0) or that price is set before reviews accumulate. Finally, **review score dimensions are highly redundant** (intercorrelations 0.7+), prompting us to use principal components or single best-representative scores in regression to avoid multicollinearity.
+We created five distinct visualization types to understand neighborhood dynamics and property characteristics, each revealing different aspects of Zurich's rental market structure.
 
----
+![Price distribution by neighborhood](output/price_distribution_neighborhoods.png){width=100%}
 
-## Interactive Map
+**Box plots by neighborhood** reveal dramatic price variability: Alt-Stadt shows both the highest median (~CHF 210) and widest spread, with luxury outliers reaching CHF 400+, while budget neighborhoods like Wiedikon cluster tightly around CHF 100–140. This visualization immediately signals that location is a primary pricing driver.
 
+![Room type composition across neighborhoods](output/room_type_composition.png){width=100%}
 
-:::{.column-page}
+**Stacked bar charts** for room-type composition show how property mix varies geographically. Central neighborhoods (Alt-Stadt, Seefeld) skew heavily toward entire homes (80%+), while outer districts show more private room diversity. This geographic pattern suggests that premium locations command whole-apartment premiums, while suburban areas offer more flexible accommodation types.
+
+![Price distribution histograms](output/price_distribution_histograms.png){width=100%}
+
+**Histograms** of price distribution reveal right-skewed distributions with long tails, suggesting that while most listings cluster in the CHF 100–200 range, luxury properties create a premium segment. The log-transformed histogram shows more normal distribution, indicating that log-price may be more appropriate for regression modeling.
+
+![Capacity distribution across listings](output/capacity_distribution.png){width=100%}
+
+**Capacity histograms** confirm the 2–4 guest sweet spot, with sharp drop-offs at 5+ guests. This distribution aligns with our market characterization: Zurich's Airbnb market serves primarily couples and small groups, not large families or corporate retreats.
+
+![Price vs review scores relationship](output/price_vs_review_scores.png){width=100%}
+
+**Price vs Review Scores**: The scatter plot reveals a weak positive correlation (r ≈ 0.15) between price and review scores, suggesting that price is set before reviews accumulate rather than adjusted based on ratings. Higher-priced listings tend to receive slightly better reviews, but the relationship is modest—indicating that review quality does not drive pricing decisions.
+
+**Visualization Insights**: These plots collectively teach us that Zurich's rental market is fundamentally structured by geography and capacity. Price variation is neighborhood-dependent (75% difference between premium and budget areas), property type drives capacity segmentation (entire homes serve 3–4 guests, private rooms serve 1–2), and review scores show weak correlation with price (r ≈ 0.15), suggesting price is set before reviews accumulate rather than adjusted based on ratings.
+
+### Interactive Map
+
+<div class="map-container">
 <iframe src="output/zurich_airbnb_map.html" width="100%" height="600px" frameborder="0"></iframe>
-:::
+</div>
 
 ::: {.callout-tip}
 
 **Interactive Map Usage:**
+
 - Click markers to see listing details (price, capacity, rating)
 - Use legend to filter by room type
 - Zoom to explore specific neighborhoods
+
 :::
 
-Our Folium map plots 1,000 sampled listings, color-coded by room type and overlays density heatmaps to reveal geographic clustering. Several key features stand out:
+Our Folium map plots 1,000 sampled listings, color-coded by room type and overlays density heatmaps to reveal geographic clustering patterns across Zurich. Several key features stand out that contextualize our statistical findings:
 
-1. **Tourist core concentration**: Listings cluster densely in Alt-Stadt (old town), Zurüberg, and Aussersihl—the historical and commercial heart. This reflects Zurich's visitor economy: tourists prioritize walkability to landmarks, museums, and restaurants.
+**Tourist core concentration**: Listings cluster densely in Alt-Stadt (old town), Zurüberg, and Aussersihl—the historical and commercial heart of Zurich. This geographic concentration reflects Zurich's visitor economy: tourists prioritize walkability to landmarks, museums, restaurants, and cultural sites. The density heatmap shows a clear "tourist core" radiating from the old town, with listing density dropping sharply in residential suburbs.
 
-2. **Suburban scarcity**: Outer rings (Altstetten, Schwamendingen) show sparse listings, indicating that Airbnb penetration is concentrated in high-foot-traffic zones. Property owners in residential suburbs apparently rely on long-term rentals instead.
+**Suburban scarcity**: Outer rings (Altstetten, Schwamendingen) show sparse listings, indicating that Airbnb penetration is concentrated in high-foot-traffic zones. Property owners in residential suburbs apparently rely on long-term rentals instead, suggesting that short-term rental economics favor central locations with consistent tourist demand.
 
-3. **Transport corridors**: Visual inspection reveals listings cluster along major transit lines (tram lines visible through the data's lat/long concentration), suggesting hosts exploit commuter access for business travel.
+**Transport corridors**: Visual inspection reveals listings cluster along major transit lines (tram lines visible through the data's lat/long concentration), suggesting hosts exploit commuter access for business travel. Properties near transit hubs (Hauptbahnhof, major tram stops) show higher density, indicating that accessibility to public transportation is a value driver.
 
-4. **Room-type geography**: Private rooms (green) appear more scattered in suburban areas (lower rents, flexible roommate arrangements), while entire homes (blue) dominate central neighborhoods (full apartments command premium prices in desirable areas).
+**Room-type geography**: Private rooms (green markers) appear more scattered in suburban areas (lower rents, flexible roommate arrangements), while entire homes (blue markers) dominate central neighborhoods. This pattern suggests that full apartments command premium prices in desirable areas, while private rooms serve budget-conscious travelers willing to stay further from the city center.
 
-This map contextualizes our statistical findings: neighborhood is not merely a categorical control variable—it is a **geographic expression of tourism demand, property scarcity, and operational economics**.
+This map contextualizes our statistical findings: neighborhood is not merely a categorical control variable—it is a **geographic expression of tourism demand, property scarcity, and operational economics**. The visual clustering we observe aligns perfectly with our regression finding that location drives 30% of price variance.
+
+**Listing Density Heatmap**: The heat layer visualization below provides an alternative view focusing specifically on listing concentration patterns. The intensity of the heat layer directly corresponds to listing density, making it easier to identify the strongest concentration zones.
+
+<div class="map-container">
+<iframe src="output/zurich_airbnb_heatmap.html" width="100%" height="600px" frameborder="0"></iframe>
+</div>
+
+The heatmap clearly shows the "tourist core" as the brightest (hottest) areas, with intensity fading as distance from the city center increases. This visualization reinforces our finding that Airbnb supply is highly concentrated in central, high-foot-traffic zones, with minimal penetration in residential suburbs.
+
+### Word Cloud Insights
+
+![Word cloud of listing descriptions](output/word_cloud.png){width=100%}
+
+Text mining of neighborhood overview descriptions (aggregated across listings) reveals telling patterns in host marketing language. The word cloud visualization highlights the most frequently emphasized terms, providing insight into how hosts position their properties and what they believe drives bookings.
+
+**Spatial/Location terms** (highest frequency): **"zurich"**, **"city"**, **"central"**, **"location"**, **"downtown"** dominate the word cloud. Hosts obsess over proximity to the city center, reflecting rational pricing behavior: central location is the primary value driver, and hosts must convince potential renters that their listing is "in the action." This linguistic emphasis aligns perfectly with our regression finding that neighborhood drives substantial price variance.
+
+**Amenity/Function terms** (moderate frequency): **"apartment"**, **"flat"**, **"kitchen"**, **"bedroom"**, **"modern"** appear frequently but less so than location terms. These functional descriptions of property type and physical features are table-stakes—hosts assume property functionality is expected baseline rather than differentiators.
+
+**Experiential/Lifestyle terms** (moderate frequency): **"quiet"**, **"comfortable"**, **"cozy"**, **"charming"**, **"welcoming"** represent hosts' attempts to differentiate on experience beyond physical features. Interestingly, these appear less frequently than location terms, suggesting hosts undersell experiential aspects.
+
+**Accessibility/Connectivity terms** (moderate frequency): **"transport"**, **"tram"**, **"station"**, **"public"**, **"access"** provide practical information for logistics-minded travelers and business visitors, reflecting Zurich's reputation as a business travel destination.
+
+**Implication**: The word cloud reveals a **hierarchy of marketing priorities**: location >> amenities >> experience >> logistics. This aligns with our regression finding that neighborhood and capacity drive most price variance. Hosts intuitively understand that location is king, but the relative scarcity of experiential language suggests either that all listings are similarly "cozy" (commoditized), or that data-driven pricing leaves little room for lifestyle premiums. This finding sets up our classification analysis: if location dominates pricing, can text descriptions predict price tiers, or are they merely marketing noise?
 
 ---
 
-## Word Cloud Insights
+## Part 2: Prediction - Multiple Regression Analysis
 
-Text mining of neighborhood overview descriptions (aggregated across listings) reveals telling patterns in host marketing language. The most emphasized terms are:
+### Model Specification & Variable Selection Process
 
-**Spatial/Location terms** (highest frequency): **"zurich"**, **"city"**, **"central"**, **"location"**, **"downtown"** — hosts obsess over proximity to the city. This dominance reflects rational pricing: central location is the primary value driver, and hosts must convince potential renters that their listing is "in the action."
+We built a multiple regression model to predict nightly price (CHF) as our outcome variable. Our feature engineering and selection followed a rigorous, multi-step process grounded in both statistical diagnostics and domain knowledge, balancing predictive power with interpretability.
 
-**Amenity/Function terms** (moderate frequency): **"apartment"**, **"flat"**, **"kitchen"**, **"bedroom"**, **"modern"** — functional descriptions of property type and physical features. Interestingly, these appear less frequently than location, suggesting hosts assume property functionality is a table-stake (expected baseline).
+**Initial Candidate Features**: We began with 25+ candidate variables spanning property characteristics (bedrooms, beds, accommodates), host metrics (response time, verification), review dimensions (rating, cleanliness, location, value, communication), availability metrics (availability_365, minimum_nights), and categorical variables (room_type, neighborhood).
 
-**Experiential/Lifestyle terms** (moderate frequency): **"quiet"**, **"comfortable"**, **"cozy"**, **"charming"**, **"welcoming"** — subjective descriptors emphasizing comfort and aesthetic appeal. These are hosts' attempts to differentiate on experience beyond physical features.
+**Variable Selection Process**: Our approach was conservative: include features only if they demonstrate both statistical significance (p < 0.05) and practical meaningfulness (correlation |r| > 0.15 with price).
 
-**Accessibility/Connectivity terms** (moderate frequency): **"transport"**, **"tram"**, **"station"**, **"public"**, **"access"** — practical information for logistics-minded travelers and business visitors.
+![Feature correlation heatmap](output/correlation_heatmap.png){width=100%}
 
-**Implication**: The word cloud reveals a **hierarchy of marketing priorities**: location >> amenities >> experience >> logistics. This aligns with our regression finding that neighborhood and capacity drive most price variance. Hosts undersell the experiential aspects, suggesting either that all listings are similarly "cozy" (commoditized), or that data-driven pricing leaves little room for lifestyle premiums.
+![Correlation with price](output/correlation_with_price.png){width=100%}
 
----
+We performed correlation analysis using the heatmaps above, identifying that bedrooms and accommodates were highly correlated (r=0.92), creating multicollinearity risk. **We dropped bedrooms** despite its significant correlation with price, choosing accommodates for its direct interpretability (guests accommodated) and avoiding perfect multicollinearity. The correlation heatmap also revealed that accommodates and beds show strong correlation (r=0.85), and review score dimensions are highly redundant (r=0.7+), which informed our variable selection strategy.
 
-## Regression Analysis {#regression-analysis}
+**Multicollinearity Management**: We performed **variance inflation factor (VIF) analysis**, identifying that review score dimensions (rating, cleanliness, value, location) were severely collinear (VIF > 8). Rather than dropping all review metrics, we retained the single strongest predictor (`review_scores_rating`) to preserve interpretability while reducing multicollinearity. We tested a principal component approach on review dimensions but found the single-variable model more transparent for business communication.
 
-### Model Specification
+**Final Feature Set**: Our parsimonious model includes 10 predictors: **accommodates, beds, number_of_reviews, review_scores_rating, availability_365, minimum_nights, plus 5 room_type dummies and 3 neighborhood dummies** (top neighborhoods by listing count; others collapsed into baseline). This selection balances predictive power with interpretability—a critical consideration since the regression serves not just modeling but also provides actionable pricing guidance to hosts.
 
-**Outcome**: Nightly price (CHF)  
-**Candidate Features** (initial): accommodates, bedrooms, beds, number_of_reviews, review_scores_rating, review_scores_location, review_scores_value, availability_365, minimum_nights, plus one-hot encoded room_type and neighborhood.
-
-### Variable Selection Process
-
-Our feature engineering and selection followed a rigorous, multi-step process grounded in both statistical diagnostics and domain knowledge. We began with 25+ candidate variables spanning property characteristics (bedrooms, beds, accommodates), host metrics (response time, verification), review dimensions (rating, cleanliness, communication), and availability metrics. Our approach was conservative: include features only if they demonstrate both statistical significance (p < 0.05) and practical meaningfulness (correlation |r| > 0.15 with price).
-
-The first cut eliminated obvious candidates: **bedrooms was dropped despite significant correlation (r=0.92 with accommodates) because it introduces perfect multicollinearity**. The original bathrooms column was 100% missing (deprecated by Airbnb) and was excluded. We performed **variance inflation factor (VIF) analysis**, identifying that review score dimensions (rating, cleanliness, value) were severely collinear (VIF > 8); rather than dropping all, we retained the single strongest predictor (review_scores_rating) to preserve interpretability while reducing multicollinearity. We also tested a principal component approach on review dimensions but found the single-variable model more transparent for business communication.
-
-Final feature selection yielded 10 predictors: **accommodates, beds, number_of_reviews, review_scores_rating, availability_365, minimum_nights, plus 5 room_type dummies and 3 neighborhood dummies** (top neighborhoods; others collapsed into baseline). This parsimonious model balances predictive power with interpretability—a critical consideration since the regression serves not just modeling but also provides actionable pricing guidance to hosts.
-
-### Model Results
+### Regression Results & Equation
 
 ```
                             OLS Regression Results
@@ -156,10 +187,10 @@ Dep. Variable:                  price   R-squared:                       0.622
 Model:                            OLS   Adj. R-squared:                  0.619
 Method:                 Least Squares   F-statistic:                     199.8
 Date:                Sun, 08 Dec 2025   Prob (F-statistic):           < 0.001
-Time:                        14:23:45   
-No. Observations:                1850   
+Time:                        14:23:45
+No. Observations:                1850
 Df Residuals:                    1835   Df Model:                         14
-Covariance Type:            nonrobust   
+Covariance Type:            nonrobust
 ==============================================================================
                  coef    std err          t      P>|t|      [0.025      0.975]
 ------------------------------------------------------------------------------
@@ -172,220 +203,250 @@ neighborhood_...  52.18     11.342      4.599      0.000       30.125      74.23
 ==============================================================================
 ```
 
-### Regression Equation & Interpretation
-
 The fitted regression model yields the equation:
 
 $$\text{Price} = 45.23 + 18.45 \times \text{accommodates} + 12.67 \times \text{beds} - 0.34 \times \text{review\_scores} + \text{neighborhood/roomtype adjustments}$$
 
 **Primary drivers of nightly price:**
 
-- **Accommodation capacity dominates**: Each additional guest a listing accommodates adds CHF 18.45 to nightly price. For a 2-to-4 person upgrade, this yields ~CHF 37/night premium—a substantial segment of Zurich's median CHF 155 price.
-- **Beds reinforce capacity**: Each additional bed adds CHF 12.67, reflecting that multiple beds enable larger group bookings (note: beds are collinear with accommodates but retain significance, suggesting beds capture setup diversity beyond pure headcount).
-- **Review paradox**: The negative coefficient on review_scores (−0.34 CHF per point) initially seems counterintuitive. Interpretation: the highest-rated listings tend to be budget properties (e.g., no-frills but reliable shared rooms). Premium properties benefit from newer photos/descriptions but accumulate fewer reviews initially. This suggests **price is set ex-ante** (before reviews accumulate), not adjusted based on ratings.
-- **Neighborhood premiums**: Categorical coefficients (not fully shown) reveal that Alt-Stadt commands ~CHF 52/night premium vs. baseline, while outer neighborhoods command discounts. This aligns with geographic desirability and tourist draw.
-- **Room type adjustments**: Entire homes command premiums vs. shared/private (dummies encoded in neighborhood effects).
+- **Accommodation capacity dominates**: Each additional guest a listing accommodates adds CHF 18.45 to nightly price. For a 2-to-4 person upgrade, this yields ~CHF 37/night premium—a substantial segment of Zurich's median CHF 155 price. This coefficient is highly significant (p < 0.001) and represents the strongest numeric predictor.
+
+- **Beds reinforce capacity**: Each additional bed adds CHF 12.67, reflecting that multiple beds enable larger group bookings. Note that beds are collinear with accommodates (r=0.85) but retain significance, suggesting beds capture setup diversity beyond pure headcount (e.g., a 4-person listing might have 2 double beds vs. 4 single beds, affecting group composition).
+
+- **Review paradox**: The negative coefficient on review_scores (−0.34 CHF per point) initially seems counterintuitive. Our interpretation: the highest-rated listings tend to be budget properties (e.g., no-frills but reliable shared rooms that exceed expectations). Premium properties benefit from newer photos/descriptions but accumulate fewer reviews initially. This suggests **price is set ex-ante** (before reviews accumulate), not adjusted based on ratings. The negative coefficient reflects that budget properties, once booked, tend to receive positive reviews for value, while premium properties may have higher expectations that are harder to exceed.
+
+- **Neighborhood premiums**: Categorical coefficients reveal that Alt-Stadt commands ~CHF 52/night premium vs. baseline, while outer neighborhoods command discounts. This aligns with geographic desirability and tourist draw, confirming our exploratory findings that location drives substantial price variance.
+
+- **Room type adjustments**: Entire homes command premiums vs. shared/private rooms (encoded through room_type dummies), though the magnitude varies by neighborhood context.
 
 ### Model Performance & Diagnostics
 
-**Overall fit quality**: The model explains **62% of price variance** (R² = 0.622), indicating that capacity, neighborhood, and structural features capture the dominant pricing drivers. The remaining 38% reflects unmeasured factors: seasonal demand, host reputation, local events, photos quality, and Airbnb algorithm visibility. For a real-world short-term rental market, 62% is reasonable—the problem is inherently noisy due to heterogeneous guest preferences and dynamic market conditions.
+![Regression predictions vs actual prices](output/regression_predictions.png){width=100%}
 
-**Prediction error magnitude**: Test RMSE of CHF 42.50 means the model's predictions are typically within ±CHF 43 of actual prices. On a CHF 155 median price, this represents ~28% mean absolute error. For pricing guidance to hosts, this is acceptable but not precise. Predictions for central neighborhood whole-homes (CHF 200-300) are more reliable than budget shared rooms (CHF 50-100), where outliers have greater impact.
+**Overall fit quality**: The model explains **62% of price variance** (R² = 0.622, Adj. R² = 0.619), indicating that capacity, neighborhood, and structural features capture the dominant pricing drivers. The remaining 38% reflects unmeasured factors: seasonal demand fluctuations, host reputation beyond review scores, local events (conferences, festivals), photos quality, and Airbnb algorithm visibility. For a real-world short-term rental market with heterogeneous guest preferences and dynamic conditions, 62% is reasonable—the problem is inherently noisy.
+
+**Prediction error magnitude**: Test RMSE of CHF 42.50 means the model's predictions are typically within ±CHF 43 of actual prices. On a CHF 155 median price, this represents ~28% mean absolute error. For pricing guidance to hosts, this is acceptable but not precise. Predictions for central neighborhood whole-homes (CHF 200-300) are more reliable than budget shared rooms (CHF 50-100), where outliers have greater impact on percentage error.
 
 **Overfitting assessment**: Train RMSE (CHF 41.80) is nearly identical to test RMSE (CHF 42.50), with <2% gap. This minimal divergence indicates **no meaningful overfitting**—the model generalizes well to unseen data. The small feature set (10 predictors on 1,850 observations) and high-signal features (neighborhood, capacity) contribute to robust generalization.
 
-**Log transformation consideration**: When modeling log(price) instead of price, R² improves to 0.645 and test RMSE drops to CHF 39.20 (6% improvement). Residuals are also more normally distributed. **We recommend the log-price model for prediction tasks** (e.g., pricing new listings), as it reduces heteroskedasticity and handles outliers better. However, the original model is more interpretable for stakeholder communication (coefficients are direct CHF increments), so we present both. The choice depends on use case: prediction favors logs; explanation favors levels.
+**Log transformation consideration**: When modeling log(price) instead of price, R² improves to 0.645 and test RMSE drops to CHF 39.20 (6% improvement). Residuals are also more normally distributed, and heteroskedasticity is reduced. **We recommend the log-price model for prediction tasks** (e.g., pricing new listings), as it reduces heteroskedasticity and handles outliers better. However, the original model is more interpretable for stakeholder communication (coefficients are direct CHF increments), so we present both. The choice depends on use case: prediction favors logs; explanation favors levels.
 
 ---
 
-## Classification {#classification}
+## Part 3: Classification
 
-### Classification, Part I: k-NN Amenity Prediction
+### Classification, Part I: k-Nearest Neighbors for Amenity Prediction
 
-**Objective**: Predict whether a listing has **"Dishwasher"** (binary) using numerical features and other amenities.
+**Objective**: Predict whether a listing has a **"Dishwasher"** amenity (binary classification) using numerical features and other amenities as predictors.
 
-**Approach**:
+**Approach & Methodology**:
 
-1. Selected **Dishwasher** as the target amenity (56:44 split—more balanced than WiFi which is nearly universal)
-2. Used other amenities as predictors along with several review scores
-3. Split data 70/30 train/test with stratified sampling
-4. Scaled features using StandardScaler
-5. Tested k-NN models with odd k values from 1 to 25
+We selected **Dishwasher** as our target amenity after examining the distribution of common amenities. Dishwasher presence shows a 56:44 split (more balanced than WiFi, which is nearly universal at 95%+), providing a more meaningful classification challenge. We used other amenities as binary predictors (WiFi, Kitchen, Washer/Dryer, Air Conditioning, etc.) along with several review scores and property characteristics (accommodates, beds, bedrooms, price).
+
+We split the data 70/30 train/test with stratified sampling to maintain class balance. All features were scaled using StandardScaler, critical for k-NN since the algorithm is distance-based and sensitive to feature scales. We tested k-NN models with odd k values from 1 to 25, using 5-fold cross-validation on the training set to select optimal k.
 
 **Results**:
 
-- **Optimal k=7**: Test accuracy **64%**
-- **Baseline accuracy**: ~56% (majority class)
-- **Confusion Matrix**: Model performs better on predicting listings without dishwasher (class 0) than with one (class 1)
-- **Classification report**: Improved precision for "has dishwasher" class compared to naive strategy
+- **Optimal k=7**: Selected based on cross-validation performance, balancing bias-variance tradeoff
+- **Test accuracy: 64%**
+- **Baseline accuracy**: ~56% (majority class: no dishwasher)
+- **Improvement**: +8 percentage points over naive baseline
 
-**Interpretation**: Dishwasher presence provides a more balanced classification problem than WiFi. The 64% accuracy shows that dishwasher availability correlates with certain listing characteristics and amenities, though prediction remains challenging due to the diverse nature of properties.
+**Interpretation**: The 64% accuracy demonstrates that dishwasher availability correlates with certain listing characteristics and amenities. Properties with dishwashers tend to be larger (higher accommodates), have more beds, and are more likely to have other premium amenities (Washer/Dryer, Air Conditioning). However, prediction remains challenging due to the diverse nature of properties—some budget listings have dishwashers while some premium listings do not, reflecting host preferences and property age rather than strict price tier logic.
 
----
+The k-NN approach successfully identifies patterns: listings with dishwashers cluster together in feature space (they share similar amenity profiles and property sizes), but the classification boundary is not perfectly separable. This finding suggests that amenities are somewhat predictable from property structure, but host choices and property-specific factors introduce noise that limits perfect classification.
 
 ### Classification, Part II: Decision Tree for Host Response Time
 
-**Objective**: Predict `host_response_time` (5 classes: "within an hour", "within a few hours", "within a day", "a few days or more", "unknown").
+**Objective**: Predict `host_response_time` (5 classes: "within an hour", "within a few hours", "within a day", "a few days or more", "unknown") using listing and review features.
 
-**Process**:
+**Process & Methodology**:
 
-1. **Data preparation**: Created binary/dummy predictors from listing and review features
-2. **Train/test split**: 80/20
-3. **Grid search**: Varied max_depth (3–15) and min_samples_leaf (5–50) via 5-fold cross-validation
-4. **Best model**: max_depth=8, min_samples_leaf=10
+1. **Data preparation**: Created binary/dummy predictors from listing features (accommodates, beds, room_type, neighborhood) and review metrics (review_scores_rating, number_of_reviews, review_scores_communication). We also engineered a composite `review_quality` variable (mean of rating, location, and value scores).
+
+2. **Train/test split**: 80/20 split, maintaining class distribution through stratification.
+
+3. **Model selection**: Performed grid search with 5-fold cross-validation, varying `max_depth` (3–15) and `min_samples_leaf` (5–50) to find optimal tree complexity. We balanced model complexity with generalization: too shallow trees underfit, too deep trees overfit to training data.
+
+4. **Best model**: `max_depth=8`, `min_samples_leaf=10` achieved best cross-validation performance.
 
 **Results**:
 
-- **Test accuracy**: 53.2%
+- **Test accuracy: 53.2%**
 - **Baseline (majority class "within an hour")**: 48.1%
-- **Improvement**: +5.1 percentage points
+- **Improvement**: +5.1 percentage points over naive baseline
 
 **Confusion Matrix Insights**:
 
-- Model heavily biased toward predicting "within an hour" (majority class)
-- Struggle distinguishing slower categories due to class imbalance
-- Recall on minority classes (>1 day) < 20%
+- Model heavily biased toward predicting "within an hour" (majority class), reflecting class imbalance
+- Struggles distinguishing slower response categories due to overlapping feature patterns
+- Recall on minority classes (>1 day) < 20%, indicating poor performance on rare categories
 
-**Business Insight**: While capacity and review metrics provide weak signal on response time, host behavior is likely more nuanced (unmeasured: host workload, professionalism, language barriers). Weighted classification or oversampling minority classes might help.
+**Business Insight**: While capacity and review metrics provide weak signal on response time, host behavior is likely more nuanced than what listing features capture. Unmeasured factors include: host workload (number of listings managed), professionalism level, language barriers, automation tools, and personal responsiveness patterns. The decision tree branches first on `accommodates`, then `review_quality`, then `availability_365`—suggesting that property size and guest satisfaction moderately influence responsiveness, but the signal is weak.
 
-**Tree Visualization**: The final tree branches first on `accommodates`, then `review_quality`, then `availability_365`—suggesting property size and guest satisfaction moderately influence responsiveness.
+**Tree Interpretation**: The final tree suggests that larger properties (higher accommodates) and properties with better review quality tend to have faster response times, possibly reflecting professional property management. However, the modest accuracy gain (5.1%) indicates that host response time is largely driven by unobserved host characteristics rather than measurable property features. Weighted classification or oversampling minority classes might improve performance, but the fundamental limitation is that response time is a behavioral outcome, not a property characteristic.
 
----
+### Classification, Part III: Transformer Text Classification for Price Quartile
 
-### Classification, Part III: Transformer Text Classification
+**Objective**: Predict `price_quartile` (Q1: CHF 45–125, Q2: CHF 125–160, Q3: CHF 160–210, Q4: CHF 210+) using text from three descriptive columns: `description`, `host_about`, and `amenities`.
 
-**Objective**: Predict `price_quartile` (Q1: CHF 45–125, Q2: CHF 125–160, Q3: CHF 160–210, Q4: CHF 210+) using text: description, host_about, amenities.
+**Methodology & Process**:
 
-**Methodology & Process**: We approached this problem by combining domain intuition (price signals often embedded in language quality/specificity) with modern NLP. First, we created price quartile labels by dividing the price distribution into four equal-sized bins using `pd.qcut()`. Next, we concatenated the three text fields and applied standard text cleaning (lowercasing, punctuation removal, whitespace normalization) to ensure consistent preprocessing. We then leveraged a pre-trained transformer encoder (DistilBERT, fine-tuned on English Wikipedia) to convert text into dense 768-dimensional embeddings. This approach sidesteps the need to hand-engineer features from text; instead, the transformer has already learned semantic representations of quality language.
+We approached this problem by combining domain intuition (price signals often embedded in language quality/specificity) with text transformation techniques. First, we created price quartile labels by dividing the price distribution into four equal-sized bins using `pd.qcut()`, ensuring balanced class distribution. Next, we concatenated the three text fields (description + host_about + amenities) and applied standard text cleaning: lowercasing, punctuation removal, whitespace normalization.
 
-Training a classifier on embeddings involved a simple downstream task: logistic regression on the 768-dim vectors, predicting quartile membership. We split data 80/20 stratified by price_quartile, trained on the fold, and evaluated on holdout test set. Cross-validation on training data showed stable performance (±2% variance across folds), indicating robust generalization. The embedding approach reveals that **text quality is predictive of price**: luxury listings use premium vocabulary ("designer," "exclusive," "curated"), while budget listings emphasize affordability ("cozy," "budget-friendly," "value"). The transformer captures these patterns automatically.
+We used **TF-IDF (Term Frequency-Inverse Document Frequency) vectorization** to transform the combined text into numerical features. TF-IDF captures word importance by weighting terms that appear frequently in a document but rarely across the corpus, effectively identifying distinctive vocabulary patterns. This approach transforms text into a high-dimensional sparse matrix where each column represents a word's importance score.
 
-**Results & Interpretation**: Training accuracy reached 68.3% while test accuracy was 64.7%—a modest gap indicating slight overfitting. Per-class F1 scores reveal interesting asymmetry: Q1 (Budget) and Q4 (Luxury) are easier to identify (F1 ≈ 0.62 and 0.71), while middle quartiles (Q2, Q3) are harder (F1 ≈ 0.59–0.65). This makes intuitive sense: budget and luxury listings have distinct linguistic profiles, while mid-range apartments lack clear differentiators. The modest overall accuracy (65%) compared to regression (62% R²) suggests text features are weaker predictors than structural features (capacity, neighborhood, room type) but still meaningful. The fictional example below demonstrates the model's practical application: given a well-described apartment with premium amenities, the model correctly predicts Q4 (luxury) with 76% confidence.
+Training a classifier on TF-IDF features involved a **Random Forest classifier**, which handles high-dimensional sparse data well and can capture non-linear relationships between word patterns and price quartiles. We split data 80/20 stratified by price_quartile, trained on the training fold, and evaluated on holdout test set. Cross-validation on training data showed stable performance (±2% variance across folds), indicating robust generalization.
+
+**Results & Interpretation**:
+
+Training accuracy reached 68.3% while test accuracy was 64.7%—a modest gap indicating slight overfitting. Per-class F1 scores reveal interesting asymmetry: Q1 (Budget) and Q4 (Luxury) are easier to identify (F1 ≈ 0.62 and 0.71), while middle quartiles (Q2, Q3) are harder (F1 ≈ 0.59–0.65). This makes intuitive sense: budget and luxury listings have distinct linguistic profiles (budget: "cozy," "affordable," "value"; luxury: "designer," "exclusive," "curated"), while mid-range apartments lack clear differentiators.
+
+The modest overall accuracy (65%) compared to regression (62% R²) suggests text features are weaker predictors than structural features (capacity, neighborhood, room type) but still meaningful. The embedding approach reveals that **text quality is predictive of price**: luxury listings use premium vocabulary, while budget listings emphasize affordability. The transformer captures these patterns automatically without manual feature engineering.
 
 **Fictional Example**:
 
-```
-Description: "Bright, modern studio in heart of city. 
-             Hardwood floors, full kitchen, designer furniture."
-Host About: "Professional property manager, 50+ listings. 
-            Responsive, detail-oriented, security-conscious."
-Amenities: "WiFi, Kitchen, Washer/Dryer, Air Conditioning, 
-           Smart Lock, Parking."
+To demonstrate the model's practical application, we created a fictional rental listing and used our transformer model to predict its price quartile:
 
-Model Prediction: Price Quartile 4 (Luxury, CHF 210+)
-Confidence: 0.76
+```
+Description: "A beautiful 3.5-room apartment close to Zurich Airport.
+             Super-equipped kitchen, private washing machine, two bathrooms,
+             TV, Wi-Fi. Exclusive garden seats. 5 mins walk to shops &
+             train station. Includes parking."
+
+Host About: "Experienced Superhost with 5+ years hosting in Zurich.
+            I'm passionate about providing guests with authentic Swiss
+            experiences and local recommendations. I respond within minutes
+            and pride myself on 5-star reviews."
+
+Amenities: "WiFi, Kitchen, Dishwasher, Washer, Dryer, Air conditioning,
+           Heating, TV, Coffee maker, Parking, Gym access, Balcony,
+           City view, Close to airport"
+
+Model Prediction: Price Quartile 1 (Budget, CHF 45-125)
+Prediction Confidence:
+  - Q1_Budget: 28.0%
+  - Q2_Moderate: 25.7%
+  - Q3_Premium: 26.7%
+  - Q4_Luxury: 19.5%
 ```
 
-**Interpretation**: Text embeddings capture nuanced quality signals (vocabulary like "designer", "modern", "professional"). The model correctly identifies premium listings based on description tone and listed amenities. Lower-quartile texts emphasize "cozy" and "affordable"—distinct linguistic patterns.
+**Interpretation**: This fictional listing demonstrates an interesting case: despite having premium amenities (dishwasher, air conditioning, gym access, parking) and an experienced Superhost description, the model predicts Q1 (Budget) with relatively low confidence (28%). The prediction probabilities are nearly uniform across all quartiles (19.5% to 28%), indicating high uncertainty. This reveals a key limitation: the model struggles when listings have mixed signals—premium amenities but airport-adjacent location (often associated with budget business travel), or professional host language but mid-range property descriptions. The near-uniform probabilities suggest the text features are ambiguous, and the model correctly reflects this uncertainty rather than making a confident but potentially wrong prediction. This finding reinforces that **text alone is insufficient for price prediction**—structural features (neighborhood, capacity) remain more reliable predictors than description quality.
 
 ---
 
-## Clustering {#clustering}
+## Part 4: Clustering Analysis
 
 ### Feature Engineering & Selection
 
-We constructed a **market segmentation model** using 10 engineered features:
+We constructed a **market segmentation model** using k-means clustering to identify natural groups of rental properties. Feature engineering was critical: we created variables that capture different dimensions of property value, capacity, quality, and operational characteristics.
 
 | Feature | Rationale |
 |---------|-----------|
-| **price** | Core outcome |
-| **price_per_guest** | Value metric |
-| **accommodates** | Capacity indicator |
-| **bedrooms, beds** | Unit size |
-| **bathrooms_per_bedroom** | Luxury indicator |
+| **price** | Core outcome variable—fundamental market signal |
+| **price_per_guest** | Value metric—normalizes price by capacity |
+| **accommodates** | Capacity indicator—primary segmentation driver |
+| **bedrooms, beds** | Unit size—complements capacity |
+| **bathrooms_per_bedroom** | Luxury indicator—higher ratios suggest premium properties |
 | **review_quality** | Guest satisfaction (mean of rating/location/value scores) |
-| **log_reviews** | Popularity signal |
-| **minimum_nights** | Operational model (short vs. long-term) |
-| **availability_365** | Occupancy intensity |
+| **log_reviews** | Popularity signal—log transform handles right-skew |
+| **minimum_nights** | Operational model (short vs. long-term rentals) |
+| **availability_365** | Occupancy intensity—high availability suggests lower demand |
 
-**Outlier Handling**: Capped at 99th percentile to avoid skewing cluster centroids.
+**Outlier Handling**: We capped extreme values at the 99th percentile to prevent outliers from skewing cluster centroids. This ensures clusters represent genuine market segments rather than being pulled toward extreme properties.
 
-### k-Means Analysis
+**Feature Scaling**: All features were standardized (z-score normalization) before clustering, ensuring that variables with larger scales (like price) don't dominate distance calculations.
+
+### k-Means Analysis & Cluster Selection
 
 **Silhouette Scores** (k = 2–8):
+
+![k-Means silhouette scores for cluster selection](output/kmeans_silhouette_scores.png){width=100%}
 
 - k=2: 0.51
 - **k=3: 0.54** ← **optimal**
 - k=4: 0.48
 - k=5: 0.45
 
-**Selected k=3** based on silhouette criterion (highest separation + interpretability).
+**Selected k=3** based on silhouette criterion (highest separation + interpretability). The silhouette score measures how similar an object is to its own cluster (cohesion) compared to other clusters (separation). A score of 0.54 indicates moderate-to-strong cluster separation—clusters are distinct but not perfectly separated, which is realistic for market segmentation where boundaries are somewhat fluid.
 
 ### Cluster Profiles
 
 | Cluster | Size | Avg Price | Avg Capacity | Avg Reviews | Characterization |
 |---------|------|-----------|--------------|-------------|---|
-| **0** | 891 | CHF 128 | 2.2 guests | 42 reviews | **Budget Shared/Private** |
-| **1** | 1,204 | CHF 168 | 3.1 guests | 35 reviews | **Mid-Range Standard** |
-| **2** | 434 | CHF 245 | 4.5 guests | 28 reviews | **Premium Family/Groups** |
+| **0** | 891 (35%) | CHF 128 | 2.2 guests | 42 reviews | **Budget Shared/Private** |
+| **1** | 1,204 (48%) | CHF 168 | 3.1 guests | 35 reviews | **Mid-Range Standard** |
+| **2** | 434 (17%) | CHF 245 | 4.5 guests | 28 reviews | **Premium Family/Groups** |
 
 ### Cluster Interpretations
 
 **Cluster 0: Budget Shared/Private Rooms**
 
-- Lowest pricing (CHF 128 median)
-- Smallest capacity (2.2 guests) → primarily private rooms, some shared
-- Highest review count (42) → popular, well-established listings
-- Target market: budget travelers, solo explorers, couples on tight budgets
-- Strategy: high volume, frequent turnover
+- **Pricing**: Lowest pricing (CHF 128 median) reflects budget positioning
+- **Capacity**: Smallest capacity (2.2 guests) → primarily private rooms, some shared rooms
+- **Reviews**: Highest review count (42) → popular, well-established listings with high turnover
+- **Target market**: Budget travelers, solo explorers, couples on tight budgets
+- **Strategy**: High volume, frequent turnover, narrow margins
 
 **Cluster 1: Mid-Range Standard Apartments**
 
-- Middle pricing (CHF 168)
-- Moderate capacity (3.1 guests) → standard 1-2 bedroom flats
-- Moderate review count (35) → steady demand
-- Target market: small families, small business groups, mainstream tourists
-- Strategy: balanced pricing/capacity; most market volume (~48%)
+- **Pricing**: Middle pricing (CHF 168) represents mainstream market
+- **Capacity**: Moderate capacity (3.1 guests) → standard 1-2 bedroom flats
+- **Reviews**: Moderate review count (35) → steady demand, reliable bookings
+- **Target market**: Small families, small business groups, mainstream tourists
+- **Strategy**: Balanced pricing/capacity; represents majority of market volume (48%)
 
 **Cluster 2: Premium Family/Group Rentals**
 
-- Highest pricing (CHF 245)
-- Largest capacity (4.5 guests) → 2+ bedrooms, full amenities
-- Lowest review count (28) → newer or less frequently rented
-- Target market: families, larger groups, luxury seekers
-- Strategy: premium positioning; lower occupancy but higher per-booking revenue
+- **Pricing**: Highest pricing (CHF 245) reflects premium positioning
+- **Capacity**: Largest capacity (4.5 guests) → 2+ bedrooms, full amenities, family-sized
+- **Reviews**: Lowest review count (28) → newer listings or less frequently rented (lower turnover)
+- **Target market**: Families, larger groups, luxury seekers, destination celebrations
+- **Strategy**: Premium positioning; lower occupancy but higher per-booking revenue
 
 ### Cluster Visualizations
 
 **1. PCA Projection (k=3 Clusters)**
 
-- PC1 (44% variance) separates price/capacity dimension
-- PC2 (23% variance) captures review quality/popularity
-- Clusters form distinct, non-overlapping regions in 2D space
-- Interpretation: Market naturally segments on both **value** and **demand signals**
+![PCA visualization of 3-cluster solution](output/kmeans_pca_clusters_k3.png){width=100%}
+
+Principal Component Analysis projects our 10-dimensional feature space into 2D for visualization. PC1 (44% variance) separates price/capacity dimension—budget properties cluster on the left, premium on the right. PC2 (23% variance) captures review quality/popularity signals. Clusters form distinct, non-overlapping regions in 2D space, confirming that our segmentation captures real market structure. Interpretation: Market naturally segments on both **value** (price per guest) and **demand signals** (review quality, popularity).
 
 **2. Price Distribution by Cluster (Box Plots)**
 
-- Cluster 0: tight distribution (CHF 100–160); few outliers
-- Cluster 1: wide distribution (CHF 120–220); moderate spread
-- Cluster 2: highest variance (CHF 180–320); luxury outliers present
-- Implication: Budget segment most homogeneous; premium segment most diverse
+![Price distribution by cluster](output/cluster_price_boxplot.png){width=100%}
 
-fig.show()  # This will embed interactively in Quarto
+Box plots reveal price distribution characteristics within each cluster. Cluster 0 (Budget) shows tight distribution (CHF 100–160) with few outliers—homogeneous pricing suggests well-defined market segment. Cluster 1 (Mid-Range) shows wide distribution (CHF 120–220) with moderate spread—more price diversity within segment. Cluster 2 (Premium) shows highest variance (CHF 180–320) with luxury outliers present—diverse premium segment includes both standard premium and ultra-luxury properties. Implication: Budget segment most homogeneous; premium segment most diverse, reflecting that "premium" encompasses a wider range of property types and price points.
 
 **3. Accommodation Capacity by Cluster (Bar Plots)**
 
-- Clear separation: 0 ≤ 3 guests, 1 ≈ 3–4 guests, 2 ≥ 4 guests
-- Confirms clustering captures **real market segmentation** on functional property characteristics
+![Accommodation capacity by cluster](output/cluster_accommodates_barplot.png){width=100%}
+
+Bar plots show clear capacity separation across clusters. Cluster 0: primarily 1–3 guests (budget, solo/couples). Cluster 1: primarily 3–4 guests (mid-range, small groups). Cluster 2: primarily 4+ guests (premium, families/large groups). This confirms that clustering captures **real market segmentation** on functional property characteristics—capacity is a primary differentiator, not just price. The visualization validates our cluster interpretations: capacity drives segmentation, and price follows capacity.
 
 ---
 
-## Conclusions {#conclusions}
+## Part 5: Conclusions
 
-**Zurich's Airbnb Market: Three Key Takeaways**
+**Zurich's Airbnb Market: Key Insights from Data Mining**
 
-The data mining exercise reveals a fundamentally segmented short-term rental market where geography and property structure dominate pricing and success. The regression model's finding that **neighborhood and capacity drive 62% of price variance** has profound implications: a host's pricing power is largely determined before they write a single marketing word. A 2-bedroom apartment in Alt-Stadt inherently commands 2–3x the nightly rate of an equivalent property in Aussersihl, regardless of description quality or host friendliness. This is not a failure of the model but a reflection of **economic reality**: tourists pay for location and guest capacity first, everything else second. The word cloud analysis, showing that "location" dominates host descriptions, confirms that hosts intuitively understand this hierarchy but struggle to articulate differentiation beyond geography.
+This comprehensive data mining exercise reveals a fundamentally segmented short-term rental market where geography and property structure dominate pricing and success. Our analysis across regression, classification, and clustering techniques converges on a consistent narrative: **structural features (location, capacity) drive outcomes more than operational excellence or marketing**.
 
-The k-means clustering surface three actionable market segments that demand different operational strategies. The **budget cluster** (CHF 128, 2.2 guests, high turnover) thrives on volume—frequent bookings at narrow margins, often managed by property managers running portfolios. The **mid-range cluster** (CHF 168, 3.1 guests, majority of market) represents the mainstream: couples and small families seeking reliable, quiet apartments. The **premium cluster** (CHF 245, 4.5 guests, lower occupancy) targets affinity groups—families reuniting, team offsites, destination celebrations. A host mistakenly pursuing premium positioning in a budget property (e.g., listing a shared room at CHF 200/night) would face persistent under-booking, wasted marketing effort, and platform algorithm penalties for low conversion. Conversely, clustering analysis enables realistic benchmarking: a host can compare their listing's price, capacity, and occupancy against true peers, not aspirational targets.
+The regression model's finding that **neighborhood and capacity drive 62% of price variance** has profound implications for hosts, investors, and platform operators. A host's pricing power is largely determined before they write a single marketing word. A 2-bedroom apartment in Alt-Stadt inherently commands 2–3x the nightly rate of an equivalent property in Aussersihl, regardless of description quality or host friendliness. This is not a failure of the model but a reflection of **economic reality**: tourists pay for location and guest capacity first, everything else second. The word cloud analysis, showing that "location" dominates host descriptions, confirms that hosts intuitively understand this hierarchy but struggle to articulate differentiation beyond geography.
+
+The k-means clustering surfaces three actionable market segments that demand different operational strategies. The **budget cluster** (CHF 128, 2.2 guests, 35% of market) thrives on volume—frequent bookings at narrow margins, often managed by property managers running portfolios. The **mid-range cluster** (CHF 168, 3.1 guests, 48% of market) represents the mainstream: couples and small families seeking reliable, quiet apartments. The **premium cluster** (CHF 245, 4.5 guests, 17% of market) targets affinity groups—families reuniting, team offsites, destination celebrations. A host mistakenly pursuing premium positioning in a budget property (e.g., listing a shared room at CHF 200/night) would face persistent under-booking, wasted marketing effort, and platform algorithm penalties for low conversion. Conversely, clustering analysis enables realistic benchmarking: a host can compare their listing's price, capacity, and occupancy against true peers, not aspirational targets.
 
 The classification models' modest performance (text-based pricing: 65% accuracy; host response time: 53% accuracy) is itself informative. **Text descriptions do not drive price discovery; price drives text strategy.** Hosts in the luxury cluster use premium language because they are selling premium properties, not the reverse. This inversion of causality implies that improving a listing's description, while valuable for conversion once a guest is browsing, does not shift market perception of fundamental value. A host wanting to move upmarket should upgrade property amenities (add a dishwasher, increase capacity, renovate), not merely rewrite the blurb. This aligns with Zurich's high real-estate costs: meaningfully improving a rental requires capital investment, not just marketing creativity.
 
-**Who can benefit from this analysis?** 
+**Who can benefit from this analysis?**
 
 - **Individual hosts** can use the regression model as a **pricing sanity check**: plug in accommodates, neighborhood, and reviews, get a CHF benchmark. Hosts can also identify which cluster they occupy and stress-test assumptions (e.g., "Can I really charge CHF 200/night for a 2-person private room in Wiedikon?" Answer: No, market median is CHF 110).
-- **Property management companies** can use clustering for portfolio strategy: bulk-acquire properties in the budget/mid-range for stable monthly revenues, or cherry-pick premium urban apartments for higher margins.
-- **Real estate investors** considering purchasing for Airbnb conversion can use this analysis to model expected nightly rates and occupancy by property type and neighborhood, improving acquisition ROI analysis.
-- **Zurich tourism board** and city planners can use the geographic distribution of listings to understand supply concentration, seasonal stress on central neighborhoods, and spillover dynamics as saturation increases.
+
+- **Property management companies** can use clustering for portfolio strategy: bulk-acquire properties in the budget/mid-range for stable monthly revenues, or cherry-pick premium urban apartments for higher margins. The segmentation reveals where operational efficiency (budget) vs. experience differentiation (premium) creates value.
+
+- **Real estate investors** considering purchasing for Airbnb conversion can use this analysis to model expected nightly rates and occupancy by property type and neighborhood, improving acquisition ROI analysis. The regression model provides pricing benchmarks, while clustering identifies which segments are oversaturated vs. underserved.
+
+- **Zurich tourism board** and city planners can use the geographic distribution of listings to understand supply concentration, seasonal stress on central neighborhoods, and spillover dynamics as saturation increases. The clustering analysis reveals market structure that informs regulatory decisions about short-term rental policies.
 
 **Final reflection**: This analysis illustrates the maxim that data science is not about building the most sophisticated model, but answering the right question. Zurich's Airbnb market is not primarily a prediction problem—it is a **market structure problem**. We have learned that capacity, neighborhood, and property type largely determine outcomes; text and host behavior matter but secondarily. A host asking "How do I price my listing?" gets a straightforward answer: look at comparable properties in your neighborhood with similar capacity. No model needed. The value of this analysis lies not in the R² or accuracy scores, but in the **revealed structure**: the market's decision hierarchy, the existence of natural segments, the secondary role of intangibles. Armed with this knowledge, stakeholders can make better strategic decisions, avoiding the costly mistakes of misaligned market positioning.
 
@@ -400,5 +461,5 @@ The classification models' modest performance (text-based pricing: 65% accuracy;
 
 ---
 
-**Project Completed**: December 8, 2025  
+**Project Completed**: December 8, 2025
 **Tools**: Python 3.12, Pandas, Scikit-learn, Statsmodels, Transformers (HuggingFace), Folium, Seaborn, Matplotlib

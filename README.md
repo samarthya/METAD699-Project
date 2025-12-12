@@ -17,6 +17,19 @@ This is a comprehensive data mining project analyzing Airbnb rental data from Zu
 - Python 3.12 or higher
 - [uv](https://docs.astral.sh/uv/) package manager
 
+If you don't have `uv` installed, install it with:
+
+```bash
+# On macOS/Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# On Windows
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# Alternative: Install via pip
+pip install uv
+```
+
 ### Installation
 
 1. **Clone the repository**
@@ -26,32 +39,50 @@ This is a comprehensive data mining project analyzing Airbnb rental data from Zu
    cd METAD699-Project
    ```
 
-2. **Install dependencies using uv**
+2. **Set up the environment with uv**
 
    ```bash
+   # This creates a virtual environment and installs all dependencies
    uv sync
    ```
 
-3. **Activate the virtual environment**
+   The `uv sync` command will:
+   - Create a `.venv` virtual environment if it doesn't exist
+   - Install Python 3.12 if needed
+   - Install all project dependencies from `pyproject.toml`
+   - Lock dependencies in `uv.lock` for reproducibility
+
+3. **Run Jupyter Notebook**
+
+   **Option A: Using uv (recommended - no activation needed)**
 
    ```bash
-   # On Linux/Mac
-   source .venv/bin/activate
-   # On Windows CMD
-   .venv\Scripts\activate
-   # On Windows PowerShell
-   .venv\Scripts\Activate.ps1
+   uv run jupyter notebook zurich_airbnb.ipynb
    ```
 
-4. **Launch Jupyter Notebook**
+   **Option B: Activate virtual environment first**
 
+   On Linux/Mac:
    ```bash
+   source .venv/bin/activate
+   jupyter notebook zurich_airbnb.ipynb
+   ```
+
+   On Windows (Command Prompt):
+   ```cmd
+   .venv\Scripts\activate
+   jupyter notebook zurich_airbnb.ipynb
+   ```
+
+   On Windows (PowerShell):
+   ```powershell
+   .venv\Scripts\Activate.ps1
    jupyter notebook zurich_airbnb.ipynb
    ```
 
 ### Project Structure
 
-```
+```bash
 METAD699-Project/
 ├── data/                          # Dataset files
 │   ├── zurich_listings.csv

@@ -1,10 +1,16 @@
 ---
 title: "Zurich Airbnb Analysis"
 subtitle: "METAD 699 Semester Project - Home"
+author:
+  - name: Saurabh Sharma
+    affiliation:
+      - name: Boston University
+date: today
 format:
   html:
     page-layout: full
     css: styles.css
+    title-block-banner: false
 ---
 
 ::: {.hero}
@@ -48,8 +54,9 @@ This semester project investigates four interconnected questions about the Zuric
 
 - Property amenities (k-NN): 64% accuracy
 - Host response time (Decision Tree): 53% accuracy
-- Price tier from description (Transformer): 65% accuracy
+- Price tier from text (Transformer): 65% accuracy
 - **Finding**: Text barely adds to structural predictability
+- **Fictional listing test**: Model shows high uncertainty when signals are mixed, reinforcing that structural features (location, capacity) dominate
 :::
 
 ::: {.g-col-12 .g-col-md-6}
@@ -59,9 +66,9 @@ This semester project investigates four interconnected questions about the Zuric
 **Clustering analysis** identifies:
 
 - 3 natural market tiers (silhouette score: 0.54)
-- Budget (19%): CHF 128/night, 2.2 guests
-- Mid-Range (74%): CHF 168/night, 3.1 guests
-- Premium (7%): CHF 245/night, 4.5 guests
+- Budget (35%): CHF 128/night, 2.2 guests
+- Mid-Range (48%): CHF 168/night, 3.1 guests
+- Premium (17%): CHF 245/night, 4.5 guests
 :::
 
 ::: {.g-col-12 .g-col-md-6}
@@ -82,6 +89,31 @@ This semester project investigates four interconnected questions about the Zuric
 
 ## Key Findings Summary
 
+### Market Overview: Understanding the Data
+
+:::: {.grid}
+
+::: {.g-col-12 .g-col-md-6}
+
+![Price distribution across all neighborhoods](output/price_distribution_neighborhoods.png){width=100%}
+
+**Price Range**: CHF 45–495/night (median CHF 155)
+**Neighborhood Premium**: Alt-Stadt commands ~30% premium over median
+
+:::
+
+::: {.g-col-12 .g-col-md-6}
+
+![Room type composition across the market](output/room_type_composition.png){width=100%}
+
+**Market Structure**: 65% entire homes, 34% private rooms, 1% shared/hotel rooms
+
+:::
+
+::::
+
+---
+
 ### Market Segmentation: The 3 Clusters
 
 The Zurich market naturally segments into 3 distinct tiers, driven primarily by **guest capacity**:
@@ -98,9 +130,9 @@ The Zurich market naturally segments into 3 distinct tiers, driven primarily by 
 
 **Cluster Profiles:**
 
-- **Budget** (19%): CHF 128/night, 2-3 guests
-- **Mid-Range** (74%): CHF 168/night, 3-4 guests
-- **Premium** (7%): CHF 245/night, 4+ guests
+- **Budget** (35%): CHF 128/night, 2-3 guests
+- **Mid-Range** (48%): CHF 168/night, 3-4 guests
+- **Premium** (17%): CHF 245/night, 4+ guests
 
 Silhouette score: **0.54** (strong separation)
 
@@ -118,11 +150,39 @@ Silhouette score: **0.54** (strong separation)
 
 ![Price distribution by cluster showing clear tier separation](output/cluster_price_boxplot.png){width=100%}
 
+**Price Structure**: Budget (CHF 100–160), Mid-Range (CHF 120–220), Premium (CHF 180–320+)
+
 :::
 
 ::: {.g-col-12 .g-col-lg-6}
 
 ![Capacity ranges that define each market segment](output/cluster_accommodates_barplot.png){width=100%}
+
+**Capacity Segmentation**: Clear separation by guest count drives market tiers
+
+:::
+
+::::
+
+---
+
+### Price Drivers: What Really Matters
+
+:::: {.grid}
+
+::: {.g-col-12 .g-col-lg-6}
+
+![Correlation analysis showing feature relationships with price](output/correlation_with_price.png){width=100%}
+
+**Key Drivers**: Accommodates, beds, and neighborhood show strongest correlations
+
+:::
+
+::: {.g-col-12 .g-col-lg-6}
+
+![Price vs review scores relationship](output/price_vs_review_scores.png){width=100%}
+
+**Review Paradox**: Higher prices correlate with better reviews, but reviews don't drive pricing
 
 :::
 
@@ -145,6 +205,8 @@ Ranked by importance:
 4. **Amenities**: Minimal price impact
 
 → **Structured data dominates**
+
+![Feature correlation heatmap](output/correlation_heatmap.png){width=100%}
 :::
 
 ::: {.g-col-12 .g-col-md-6}
@@ -152,11 +214,13 @@ Ranked by importance:
 
 Model performance:
 
-✓ Amenities from structure: 64% accuracy  
-✓ Price tier from text: 65% accuracy  
-✓ Property features → 62% price variance  
-✗ Host behavior: 53% accuracy  
-✗ Text adds little to pricing
+- ✓ Amenities from structure: 64% accuracy
+- ✓ Price tier from text: 65% accuracy
+- ✓ Property features → 62% price variance
+- ✗ Host behavior: 53% accuracy
+- ✗ Text adds little to pricing
+
+![Regression predictions vs actual prices](output/regression_predictions.png){width=100%}
 :::
 
 ::::
