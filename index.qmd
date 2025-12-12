@@ -22,84 +22,141 @@ Exploratory analysis and machine learning modeling of 2,500+ Zurich Airbnb listi
 
 ---
 
-## Project Overview
+## Our Research Questions
 
-This semester project applies data mining and statistical modeling to understand the Zurich short-term rental market. We explore:
+This semester project investigates four interconnected questions about the Zurich short-term rental market through data mining and predictive modeling.
 
 :::: {.grid}
 
 ::: {.g-col-12 .g-col-md-6}
 
-### 📊 **Exploratory Analysis**
+### ❓ **RQ1: What Drives Price?**
 
-- 2,529 listings across 10 neighborhoods
-- Missing value imputation & data preparation
-- Summary statistics & visualizations
-- Interactive mapping & text analysis
+**Regression Analysis** reveals:
+
+- Neighborhood location: +CHF 44% premium
+- Guest capacity: +CHF 18.45/night per guest
+- Review count: Slight discount (quality-price tradeoff)
+- **Result**: Structured features explain 62% of price variance
 :::
 
 ::: {.g-col-12 .g-col-md-6}
 
-### 📈 **Regression Modeling**
+### ❓ **RQ2: What Can We Predict?**
 
-- Multiple linear regression (price prediction)
-- R² = 0.622 (explains 62% of variance)
-- Key drivers: capacity, location, reviews
-- OLS summary with statistical significance
+**Classification models** show:
+
+- Property amenities (k-NN): 64% accuracy
+- Host response time (Decision Tree): 53% accuracy
+- Price tier from description (Transformer): 65% accuracy
+- **Finding**: Text barely adds to structural predictability
 :::
 
 ::: {.g-col-12 .g-col-md-6}
 
-### 🎯 **Classification**
+### ❓ **RQ3: How Many Segments Exist?**
 
-- k-NN: Dishwasher amenity prediction (64% accuracy)
-- Decision Trees: Host response time (53% accuracy)
-- Transformer NLP: Price quartile from text (65% accuracy)
-- Comprehensive model evaluation & comparisons
+**Clustering analysis** identifies:
+
+- 3 natural market tiers (silhouette score: 0.54)
+- Budget (19%): CHF 128/night, 2.2 guests
+- Mid-Range (74%): CHF 168/night, 3.1 guests
+- Premium (7%): CHF 245/night, 4.5 guests
 :::
 
 ::: {.g-col-12 .g-col-md-6}
 
-### 🔗 **Clustering**
+### ❓ **RQ4: What Should We Do?**
 
-- k-Means segmentation (k=3 optimal)
-- Three market segments identified
-- Feature engineering & interpretation
-- PCA visualization & cluster profiles
+**Strategic Implications**:
+
+- Hosts: Use regression model for pricing benchmarks
+- Investors: Segment-specific strategies by capacity tier
+- Managers: Location drives ROI more than amenities
+- City planners: Supply monitoring critical by segment
 :::
 
 ::::
 
 ---
 
-## Key Findings
+## Key Findings Summary
+
+### Market Segmentation: The 3 Clusters
+
+The Zurich market naturally segments into 3 distinct tiers, driven primarily by **guest capacity**:
 
 :::: {.grid}
 
-::: {.g-col-12 .g-col-md-4}
-**Market Segmentation**
+::: {.g-col-12 .g-col-lg-8}
 
-Three distinct clusters:
+![PCA visualization showing 3 natural market clusters with clear separation](output/kmeans_pca_clusters_k3.png){width=100%}
 
-- Budget (CHF 128/night)
-- Mid-Range (CHF 168/night)  
-- Premium (CHF 245/night)
 :::
 
-::: {.g-col-12 .g-col-md-4}
-**Price Drivers**
+::: {.g-col-12 .g-col-lg-4}
 
-Each guest capacity: +CHF 18.45/night  
-Premium neighborhood: +CHF 52/night  
-Higher reviews: -CHF 0.34/night (quality-budget correlation)
+**Cluster Profiles:**
+
+- **Budget** (19%): CHF 128/night, 2-3 guests
+- **Mid-Range** (74%): CHF 168/night, 3-4 guests
+- **Premium** (7%): CHF 245/night, 4+ guests
+
+Silhouette score: **0.54** (strong separation)
+
 :::
 
-::: {.g-col-12 .g-col-md-4}
-**Predictability**
+::::
 
-Structured features → 62% price variance  
-Text features → 64% quartile accuracy  
-Host behavior → 53% response time accuracy
+---
+
+### What Drives Each Cluster
+
+:::: {.grid}
+
+::: {.g-col-12 .g-col-lg-6}
+
+![Price distribution by cluster showing clear tier separation](output/cluster_price_boxplot.png){width=100%}
+
+:::
+
+::: {.g-col-12 .g-col-lg-6}
+
+![Capacity ranges that define each market segment](output/cluster_accommodates_barplot.png){width=100%}
+
+:::
+
+::::
+
+---
+
+### Decision Matrix: What Matters for Price & Predictions
+
+:::: {.grid}
+
+::: {.g-col-12 .g-col-md-6}
+**Price Drivers (RQ1)**
+
+Ranked by importance:
+
+1. **Location** (neighborhood): +44% premium
+2. **Capacity** (+1 guest): +CHF 18.45/night
+3. **Review count**: Small negative effect
+4. **Amenities**: Minimal price impact
+
+→ **Structured data dominates**
+:::
+
+::: {.g-col-12 .g-col-md-6}
+**Predictability (RQ2)**
+
+Model performance:
+
+✓ Amenities from structure: 64% accuracy  
+✓ Price tier from text: 65% accuracy  
+✓ Property features → 62% price variance  
+✗ Host behavior: 53% accuracy  
+✗ Text adds little to pricing
 :::
 
 ::::
@@ -117,7 +174,6 @@ Comprehensive write-up with code, visualizations, interpretations, and conclusio
 - **PDF Report**: Formatted for printing/submission
 - **DOCX Report**: Editable Word document
 - **Jupyter Notebook**: Original Python code
-- **Data Files**: Cleaned datasets, cluster assignments
 
 ---
 
@@ -134,7 +190,7 @@ Comprehensive write-up with code, visualizations, interpretations, and conclusio
 
 ## About This Project
 
-This is a **student semester project** for METAD 699 (Data Mining). The analysis demonstrates:
+This is a **semester project** for METAD 699 (Data Mining). The analysis demonstrates:
 
 - Systematic data exploration & visualization
 - Feature engineering & variable selection
@@ -154,7 +210,3 @@ This is a **student semester project** for METAD 699 (Data Mining). The analysis
 - 📊 [View Visualizations](#)
 - 🗺️ [Interactive Map](/analysis.html#interactive-map)
 - 📋 [Data Dictionary](/downloads.html)
-
----
-
-*Last updated: December 8, 2025*
